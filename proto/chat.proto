@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package chat;
+
+message ErrorResponse {
+  string errorMessage = 1;
+  int32 errorCode = 2; 
+  optional string subErrorMessage = 3;
+  optional int32 subErrorCode = 4; 
+}
+message Empty {}
+
+service MessageService {
+    rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {}
+}
+
+message SendMessageRequest {
+    string content = 1;
+    int32 senderId = 2;
+    string conversationId = 3;
+}
+
+message SendMessageResponse {
+    optional ErrorResponse error = 1; 
+    bool success = 2; 
+}
+
+
+service ConversationService {
+    rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
+    rpc GetConversationPage (GetConversationListRequest) returns (GetConversationListResponse) {}
+}
+message GetConversationListRequest {
+    int32 profileId = 1;
+    int32 page = 2 ;
+    int32 size = 3;
+}
+
+message ConversationData {
+    string name = 1;
+    string imageUrl = 2;
+    string lastMessage = 3;
+    string lastSendAt = 4;
+}
+
+message GetConversationListData {
+    repeated ConversationData conversationList = 1;
+    int32 totalPage = 2;
+}
+
+message GetConversationListResponse {
+    optional GetConversationListData data = 1;
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}
+
+message CreateConversationRequest {
+    repeated int32 memberIdList = 1;
+}
+message CreateConversationData {
+    string conversationId = 1;
+}
+message CreateConversationResponse {
+    optional CreateConversationData data = 1;
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}

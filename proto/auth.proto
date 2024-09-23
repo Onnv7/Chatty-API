@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+package auth;
+
+message ErrorResponse {
+  string errorMessage = 1;
+  int32 errorCode = 2; 
+  optional string subErrorMessage = 3;
+  optional int32 subErrorCode = 4; 
+}
+message Empty {}
+
+
+service AuthService {
+  rpc RegisterAccount (RegisterAccountRequest) returns (RegisterAccountResponse) {}
+  rpc VerifyJwt(VerifyJwtRequest) returns (VerifyJwtResponse) {}
+  rpc LoginAccount(LoginAccountRequest) returns (LoginAccountResponse) {}
+  rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
+  rpc SendVerificationCode(SendVerificationCodeRequest) returns (SendVerificationCodeResponse) {}
+}
+
+message SendVerificationCodeRequest {
+  string email = 1;
+}
+
+message SendVerificationCodeResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
+}
+
+message UpdatePasswordRequest {
+  int32 accountId = 1;
+  string oldPassword = 2;
+  string newPassword = 3;
+}
+
+message UpdatePasswordResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
+}
+
+message LoginAccountRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginAccountData {
+  string accessToken = 1;
+  string refreshToken = 2;
+}
+
+message LoginAccountResponse {
+  optional LoginAccountData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
+}
+
+message VerifyJwtRequest {
+  string token = 1;
+}
+
+message VerifyJwtData {
+  int32 id = 1;
+  string email = 2;
+}
+
+message VerifyJwtResponse {
+  optional VerifyJwtData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
+}
+
+
+message RegisterAccountRequest {
+  string email = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string password = 4;
+  string birthDate = 5;
+  string gender = 6;
+}
+
+message RegisterAccountResponse {
+  optional ErrorResponse error = 3; 
+  bool success = 1; 
+}
+

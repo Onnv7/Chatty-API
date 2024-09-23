@@ -1,0 +1,89 @@
+syntax = "proto3";
+
+package user;
+
+
+message ErrorResponse {
+  string errorMessage = 1;
+  int32 errorCode = 2; 
+  optional string subErrorMessage = 3;
+  optional int32 subErrorCode = 4; 
+}
+message Empty {}
+
+
+service ProfileService {
+    rpc CreateUserProfile(CreateUserProfileRequest) returns (CreateUserProfileResponse) {}
+    rpc SearchProfile(SearchProfileRequest) returns (SearchProfileResponse) {}
+    rpc GetProfileById(GetProfileByIdRequest) returns (GetProfileByIdResponse) {}
+    rpc UpdateProfileById(UpdateProfileByIdRequest) returns (UpdateProfileByIdResponse) {}
+}
+
+message UpdateProfileByIdRequest {
+  int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+  string gender = 4;
+  string birth_date = 5;
+  string introduction = 6;
+}
+
+message UpdateProfileByIdResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
+}
+
+message GetProfileByIdRequest {
+  int32 id  = 1;
+}
+
+message GetProfileByIdData {
+  string avatarUrl = 1;
+  string email = 2;
+  string firstName = 3;
+  string lastName = 4;
+  string gender = 5;
+  string birthDate = 6;
+
+}
+
+message GetProfileByIdResponse {
+  optional GetProfileByIdData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
+}
+
+message SearchProfileRequest {
+  string email = 1;
+}
+
+message SearchProfileData {
+  int32 id = 1;
+  string firstName = 2;
+  string lastName = 3;
+}
+
+message SearchProfileResponse {
+  optional SearchProfileData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
+}
+
+message CreateUserProfileRequest {
+    string email = 1;
+    string firstName = 3;
+    string lastName = 4;
+    string gender = 5;
+    string birthDate = 6;
+    int32 accountId = 7;
+}
+
+message CreateUserProfileData {
+  int32 profileId = 1;
+}
+
+message CreateUserProfileResponse {
+  optional ErrorResponse error = 1; 
+  optional CreateUserProfileData data = 2;
+  bool success = 3; 
+}

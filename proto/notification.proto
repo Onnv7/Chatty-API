@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package notification;
+
+
+message ErrorResponse {
+    string errorMessage = 1;
+    int32 errorCode = 2; 
+    optional string subErrorMessage = 3;
+    optional int32 subErrorCode = 4; 
+}
+
+message Empty {}
