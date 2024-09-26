@@ -28,6 +28,10 @@ export class RegisterAccountRequestPayload {
   @IsString()
   password: string;
 
+  // @ApiProperty({ example: SwaggerConstant.TOKEN_EX })
+  // @IsString()
+  // token: string;
+
   @ApiProperty({ enum: Gender, example: SwaggerConstant.GENDER_EX })
   @IsEnum(Gender)
   gender: Gender;
@@ -61,4 +65,20 @@ export class SendVerificationCodeRequestPayload {
   @ApiProperty({ example: SwaggerConstant.EMAIL_EX })
   @IsString()
   email: string;
+}
+
+export class VerifyEmailCodeRequestPayload {
+  @ApiProperty({
+    example: SwaggerConstant.EMAIL_EX,
+  })
+  @IsNotEmpty()
+  @IsString()
+  email: string;
+
+  @ApiProperty({
+    example: SwaggerConstant.TOKEN_EX,
+  })
+  @IsNotEmpty()
+  @IsString()
+  code: string;
 }

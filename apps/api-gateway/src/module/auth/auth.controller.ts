@@ -1,4 +1,13 @@
-import { Body, Controller, Param, Patch, Post, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Res,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 
 import {
@@ -6,12 +15,14 @@ import {
   RegisterAccountRequestPayload,
   SendVerificationCodeRequestPayload,
   UpdatePasswordRequestPayload,
+  VerifyEmailCodeRequestPayload,
 } from './payload/auth.request';
 import { ResponseAPI } from '../../common/model/response-api';
 import { ResponseMessage } from '@app/shared';
 import { ApiTags } from '@nestjs/swagger';
 import { LoginAccountResponsePayload } from './payload/auth.response';
 import { Response } from 'express';
+import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
 
 @ApiTags('AUTH')
 @Controller('auth')
@@ -22,6 +33,7 @@ export class AuthController {
   async createAccount(
     @Body() body: RegisterAccountRequestPayload,
   ): Promise<ResponseAPI<any>> {
+    console.log('🚀 ~ AuthController ~ body:', body);
     const data = await this.authService.createAccount(body);
 
     return { data: data, message: ResponseMessage.CREATE };
@@ -59,5 +71,31 @@ export class AuthController {
     const data = await this.authService.sendVerificationCode(body);
 
     return { message: ResponseMessage.CREATE };
+  }
+
+  @Post('/send-token-register')
+  async sendVerificationToken(
+    @Body() body: SendVerificationCodeRequestPayload,
+  ): Promise<ResponseAPI<void>> {
+    const data = await this.authService.sendVerificationToken(body);
+
+    return { message: ResponseMessage.CREATE };
+  }
+
+  @Get('/verify-email-token')
+  @ApiQueryURL([{ name: 'token', example: 'dfdcvfsndifnASIb' }])
+  async verifyEmailToken(
+    @Query('token') token: string,
+  ): Promise<ResponseAPI<void>> {
+    await this.authService.verifyEmailToken(token);
+    return { message: ResponseMessage.UPDATE };
+  }
+
+  @Post('/verify-email-code')
+  async verifyEmailCode(
+    @Body() body: VerifyEmailCodeRequestPayload,
+  ): Promise<ResponseAPI<void>> {
+    await this.authService.verifyEmailCode(body);
+    return { message: ResponseMessage.UPDATE };
   }
 }

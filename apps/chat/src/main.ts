@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const app = await NestFactory.createMicroservice(
     AppChatModule,
-    sharedService.getGRPCConfigServer(
+    sharedService.getGRPCServerConfig(
       CHAT_PACKAGE_NAME,
       join(__dirname, '../chat.proto'),
       sharedService.env.CHAT_SERVER_URL,

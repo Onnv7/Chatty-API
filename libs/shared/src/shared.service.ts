@@ -41,13 +41,24 @@ export class SharedService {
     };
   }
 
-  getGRPCConfigServer(packageName: string, pathFile: string, url: string) {
+  getGRPCServerConfig(packageName: string, pathFile: string, url: string) {
     return {
       transport: Transport.GRPC,
       options: {
         url: url,
         protoPath: pathFile,
         package: packageName,
+      },
+    };
+  }
+
+  getGRPCClientConfig(packageName: string, pathFile: string, url: string) {
+    return {
+      transport: Transport.KAFKA,
+      options: {
+        url: url,
+        package: packageName,
+        protoPath: pathFile,
       },
     };
   }
@@ -62,12 +73,6 @@ export class SharedService {
         },
         consumer: {
           groupId: KAFKA_NOTIFICATION_GROUP_ID,
-        },
-        producer: {
-          allowAutoTopicCreation: true, // Allow automatic creation of reply topics
-        },
-        reply: {
-          autoSubscribe: true, // Enable automatic subscription to reply topics
         },
       },
     };

@@ -20,6 +20,34 @@ export interface ErrorResponse {
 export interface Empty {
 }
 
+export interface VerifyTokenRequest {
+  token: string;
+}
+
+export interface VerifyTokenResponse {
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface SendVerificationTokenResponse {
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface SendVerificationTokenRequest {
+  email: string;
+}
+
+export interface VerifyCodeRequest {
+  email: string;
+  code: string;
+}
+
+export interface VerifyCodeResponse {
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
 export interface SendVerificationCodeRequest {
   email: string;
 }
@@ -48,6 +76,7 @@ export interface LoginAccountRequest {
 export interface LoginAccountData {
   accessToken: string;
   refreshToken: string;
+  profileId: number;
 }
 
 export interface LoginAccountResponse {
@@ -97,6 +126,12 @@ export interface AuthServiceClient {
   updatePassword(request: UpdatePasswordRequest): Observable<UpdatePasswordResponse>;
 
   sendVerificationCode(request: SendVerificationCodeRequest): Observable<SendVerificationCodeResponse>;
+
+  sendVerificationToken(request: SendVerificationTokenRequest): Observable<SendVerificationTokenResponse>;
+
+  verifyCode(request: VerifyCodeRequest): Observable<VerifyCodeResponse>;
+
+  verifyToken(request: VerifyTokenRequest): Observable<VerifyTokenResponse>;
 }
 
 export interface AuthServiceController {
@@ -117,6 +152,18 @@ export interface AuthServiceController {
   sendVerificationCode(
     request: SendVerificationCodeRequest,
   ): Promise<SendVerificationCodeResponse> | Observable<SendVerificationCodeResponse> | SendVerificationCodeResponse;
+
+  sendVerificationToken(
+    request: SendVerificationTokenRequest,
+  ): Promise<SendVerificationTokenResponse> | Observable<SendVerificationTokenResponse> | SendVerificationTokenResponse;
+
+  verifyCode(
+    request: VerifyCodeRequest,
+  ): Promise<VerifyCodeResponse> | Observable<VerifyCodeResponse> | VerifyCodeResponse;
+
+  verifyToken(
+    request: VerifyTokenRequest,
+  ): Promise<VerifyTokenResponse> | Observable<VerifyTokenResponse> | VerifyTokenResponse;
 }
 
 export function AuthServiceControllerMethods() {
@@ -127,6 +174,9 @@ export function AuthServiceControllerMethods() {
       "loginAccount",
       "updatePassword",
       "sendVerificationCode",
+      "sendVerificationToken",
+      "verifyCode",
+      "verifyToken",
     ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);

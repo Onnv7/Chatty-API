@@ -32,5 +32,8 @@ export const SwaggerConstant = {
 
   CONVERSATION_ID_EX: '12312312',
   SENDER_ID_EX: '1',
+  RECEIVER_ID_EX: '2',
+  INVITATION_ACTION_EX: 'ACCEPT',
   CONTENT_EX: 'hello world!',
+  SEARCH_FRIEND_EX: 'An',
 };

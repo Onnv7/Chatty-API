@@ -17,6 +17,38 @@ service AuthService {
   rpc LoginAccount(LoginAccountRequest) returns (LoginAccountResponse) {}
   rpc UpdatePassword(UpdatePasswordRequest) returns (UpdatePasswordResponse) {}
   rpc SendVerificationCode(SendVerificationCodeRequest) returns (SendVerificationCodeResponse) {}
+  rpc SendVerificationToken(SendVerificationTokenRequest) returns (SendVerificationTokenResponse) {}
+  rpc VerifyCode(VerifyCodeRequest) returns (VerifyCodeResponse) {}
+  rpc VerifyToken(VerifyTokenRequest) returns (VerifyTokenResponse) {}
+}
+
+message VerifyTokenRequest {
+  string token = 1;
+}
+
+message VerifyTokenResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
+}
+
+
+message SendVerificationTokenResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
+}
+
+message SendVerificationTokenRequest {
+  string email = 1;
+}
+
+message VerifyCodeRequest {
+  string email = 1;
+  string code = 2;
+}
+
+message VerifyCodeResponse {
+  optional ErrorResponse error = 1; 
+  bool success = 2; 
 }
 
 message SendVerificationCodeRequest {
@@ -47,6 +79,7 @@ message LoginAccountRequest {
 message LoginAccountData {
   string accessToken = 1;
   string refreshToken = 2;
+  int32 profileId = 3;
 }
 
 message LoginAccountResponse {

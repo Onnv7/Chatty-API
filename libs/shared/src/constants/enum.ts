@@ -2,3 +2,18 @@ export enum Gender {
   MALE = 'MALE',
   FEMALE = 'FEMALE',
 }
+
+export enum FriendStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+}
+
+export enum InvitationAction {
+  ACCEPT = 'ACCEPT',
+  REFUSE = 'REFUSE',
+}
+
+export enum ActorType {
+  SENDER = 'SENDER',
+  RECEIVER = 'RECEIVER',
+}

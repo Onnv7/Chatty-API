@@ -20,7 +20,6 @@ export class ConversationController implements ConversationServiceController {
     request: GetConversationListRequest,
   ): Promise<GetConversationListResponse> {
     const data = await this.conversationService.getConversationPage(request);
-    console.log('🚀 ~ ConversationController ~ data:', data);
     return { data, success: true };
   }
 

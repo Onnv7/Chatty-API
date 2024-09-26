@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { Global, Module, OnModuleInit } from '@nestjs/common';
 import { AppAuthController } from './app-auth.controller';
 import { AppAuthService } from './app-auth.service';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -23,7 +23,7 @@ import {
   KAFKA_AUTH_GROUP_ID,
   KAFKA_NOTIFICATION_CLIENT_ID,
   KAFKA_NOTIFICATION_GROUP_ID,
-  NOTIFICATION_SERVICE_CLIENT,
+  NOTIFICATION_SERVICE_CLIENT_KAFKA,
   PROFILE_SERVICE,
   USER_SERVICE_CLIENT,
 } from '../../../libs/shared/src/constants/configuration.constant';
@@ -63,22 +63,13 @@ const repositoryList = [AccountRepository, MailVerificationRepository];
         }),
       },
       {
-        name: NOTIFICATION_SERVICE_CLIENT,
+        name: NOTIFICATION_SERVICE_CLIENT_KAFKA,
         useFactory: (sharedService: SharedService) => ({
           transport: Transport.KAFKA,
           options: {
             client: {
               clientId: KAFKA_AUTH_CLIENT_ID,
               brokers: [sharedService.env.KAFKA_BROKER],
-            },
-            consumer: {
-              groupId: KAFKA_NOTIFICATION_GROUP_ID,
-            },
-            producer: {
-              allowAutoTopicCreation: true, // Allow automatic creation of reply topics
-            },
-            reply: {
-              autoSubscribe: true, // Enable automatic subscription to reply topics
             },
           },
         }),
@@ -118,4 +109,6 @@ const repositoryList = [AccountRepository, MailVerificationRepository];
     SharedModule,
   ],
 })
-export class AppAuthModule {}
+export class AppAuthModule implements OnModuleInit {
+  onModuleInit() {}
+}

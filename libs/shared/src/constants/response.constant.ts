@@ -83,6 +83,19 @@ export const ErrorResponseData = {
     subErrorCode: 1801,
     subErrorMessage: 'Email already exists',
   } as ErrorData,
+  CONVERSATION_EXISTED: {
+    errorCode: ErrorCode.EXISTED,
+    errorMessage: ErrorMessage[ErrorCode.EXISTED],
+    subErrorCode: 1802,
+    subErrorMessage: 'Conversation already exists',
+  } as ErrorData,
+  FRIEND_EXISTED: {
+    errorCode: ErrorCode.EXISTED,
+    errorMessage: ErrorMessage[ErrorCode.EXISTED],
+    subErrorCode: 1803,
+    subErrorMessage: 'Friend ship already exists',
+  } as ErrorData,
+
   // NOT_FOUND
   NOT_FOUND: {
     errorCode: ErrorCode.NOT_FOUND,
@@ -116,11 +129,11 @@ export const ErrorResponseData = {
     subErrorMessage: 'Email not found',
   } as ErrorData,
 
-  ORDER_NOT_FOUND: {
+  FRIEND_NOT_FOUND: {
     errorCode: ErrorCode.NOT_FOUND,
     errorMessage: ErrorMessage[ErrorCode.NOT_FOUND],
     subErrorCode: 1405,
-    subErrorMessage: 'Order not found',
+    subErrorMessage: 'Friend ship not found',
   } as ErrorData,
 
   // FORBIDDEN
@@ -139,5 +152,12 @@ export const ErrorResponseData = {
     errorMessage: ErrorMessage[ErrorCode.UNAUTHORIZED],
     subErrorCode: 1601,
     subErrorMessage: 'Credential is wrong',
+  } as ErrorData,
+
+  VERIFICATION_WRONG: {
+    errorCode: ErrorCode.UNAUTHORIZED,
+    errorMessage: ErrorMessage[ErrorCode.UNAUTHORIZED],
+    subErrorCode: 1602,
+    subErrorMessage: 'Account not verified',
   } as ErrorData,
 };

@@ -7,12 +7,14 @@ import { AccountSaga } from '../../cqrs/saga/accout.saga';
 import { CqrsModule } from '@nestjs/cqrs';
 import { RollbackAccountHandler } from '../../cqrs/command/auth/RegisterAccount/create-account/rollback/rollback-account.cmd.handler';
 import { CreateProfileHandler } from '../../cqrs/command/auth/RegisterAccount/create-profile/create-profile.cmd.handler';
-import { UpdateProfileIdAccountHandler } from '../../cqrs/command/auth/RegisterAccount/update-profile-id-account/update-profile-id-account.cmd.handler';
+import { UpdateProfileIdAccountAndSendTokenHandler } from '../../cqrs/command/auth/RegisterAccount/update-profile-id-account/update-profile-id-account.cmd.handler';
+import { VerifyJwtHandler } from '../../cqrs/command/auth/VerifyJwt/verify-jwt.cmd.handler';
 
 const commandHandlers = [
   CreateAccountHandler,
   CreateProfileHandler,
-  UpdateProfileIdAccountHandler,
+  UpdateProfileIdAccountAndSendTokenHandler,
+  VerifyJwtHandler,
 ];
 
 @Module({

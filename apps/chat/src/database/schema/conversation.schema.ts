@@ -5,8 +5,11 @@ export class Conversation {
   @Prop({ required: true, unique: true })
   memberIdList: number[];
 
-  @Prop({ name: 'last_message' })
+  @Prop({})
   lastMessage: string;
+
+  @Prop({})
+  senderId: number;
 
   @Prop({ default: Date.now })
   updatedAt?: Date;

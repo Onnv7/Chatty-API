@@ -8,6 +8,7 @@ import {
   SharedService,
 } from '../../../../../../../../libs/shared/src';
 import { CreateAccountCommand } from './create-account.command';
+import { MailVerificationRepository } from '../../../../../data/repository/mail-verification.repository';
 
 @CommandHandler(CreateAccountCommand)
 export class CreateAccountHandler
@@ -15,18 +16,19 @@ export class CreateAccountHandler
 {
   constructor(
     private readonly accountRepository: AccountRepository,
+    private readonly mailVerificationRepository: MailVerificationRepository,
     private readonly eventBus: EventBus,
     private readonly sharedService: SharedService,
   ) {}
   async execute(command: CreateAccountCommand): Promise<any> {
-    console.log('CreateAccountHandler processing ');
     let accountEntity = await this.accountRepository.findOneBy({
       username: command.email,
     });
-    console.log('CreateAccountHandler processing accountEntity', command);
+
     if (accountEntity) {
       throw new AppError(ErrorResponseData.EMAIL_EXISTED);
     }
+
     accountEntity = this.accountRepository.create({
       username: command.email,
       password: await bcrypt.hash(

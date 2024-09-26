@@ -1,6 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessageService } from './message.service';
 import {
+  GetMessageRequest,
+  GetMessageResponse,
   MessageServiceController,
   MessageServiceControllerMethods,
   SendMessageRequest,
@@ -12,6 +14,14 @@ import { Observable } from 'rxjs';
 @MessageServiceControllerMethods()
 export class MessageController implements MessageServiceController {
   constructor(private readonly messageService: MessageService) {}
+
+  async getMessagePage(
+    request: GetMessageRequest,
+  ): Promise<GetMessageResponse> {
+    const data = await this.messageService.getMessagePage(request);
+    return { data, success: true };
+  }
+
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResponse> {
     const data = await this.messageService.sendMessage(request);
     return { success: true };

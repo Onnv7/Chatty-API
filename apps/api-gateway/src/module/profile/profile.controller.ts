@@ -15,7 +15,7 @@ import {
 } from './payload/profile.response';
 import { ResponseAPI } from '../../common/model/response-api';
 import { ResponseMessage } from '../../../../../libs/shared/src';
-import { JwtGuard } from '../../common/auth/jwt.guard';
+import { JwtGuard } from '../../common/guard/jwt.guard';
 import { UpdateProfileRequestPayload } from './payload/profile.request';
 
 @ApiTags('PROFILE')

@@ -1,4 +1,5 @@
-export class SendEmailCodeData {
+export class SendEmailVerificationData {
   email: string;
-  code: string;
+  token: string;
+  type: 'token' | 'code';
 }

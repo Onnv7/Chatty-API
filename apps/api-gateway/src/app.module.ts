@@ -13,6 +13,7 @@ import {
   PROFILE_SERVICE,
   USER_SERVICE_CLIENT,
   CONVERSATION_SERVICE,
+  FRIEND_SERVICE,
 } from '../../../libs/shared/src/constants/configuration.constant';
 import { ConversationModule } from './module/conversation/conversation.module';
 import {
@@ -24,11 +25,14 @@ import {
 } from '../../../libs/shared/src/types/chat';
 import { MessageModule } from './module/message/message.module';
 import {
+  FRIEND_SERVICE_NAME,
   PROFILE_SERVICE_NAME,
   ProfileServiceClient,
   USER_PACKAGE_NAME,
 } from '../../../libs/shared/src/types/user';
 import { SharedModule, SharedService } from '../../../libs/shared/src';
+import { AuthContextService } from './libs/auth-context.service';
+import { FriendModule } from './module/friend/friend.module';
 
 @Global()
 @Module({
@@ -76,6 +80,7 @@ import { SharedModule, SharedService } from '../../../libs/shared/src';
     ]),
     ConversationModule,
     MessageModule,
+    FriendModule,
   ],
   controllers: [AppController],
   providers: [
@@ -84,6 +89,13 @@ import { SharedModule, SharedService } from '../../../libs/shared/src';
       provide: PROFILE_SERVICE,
       useFactory: (client: ClientGrpc) => {
         return client.getService<ProfileServiceClient>(PROFILE_SERVICE_NAME);
+      },
+      inject: [USER_SERVICE_CLIENT],
+    },
+    {
+      provide: FRIEND_SERVICE,
+      useFactory: (client: ClientGrpc) => {
+        return client.getService<ProfileServiceClient>(FRIEND_SERVICE_NAME);
       },
       inject: [USER_SERVICE_CLIENT],
     },
@@ -103,6 +115,7 @@ import { SharedModule, SharedService } from '../../../libs/shared/src';
       },
       inject: [CHAT_SERVICE_CLIENT],
     },
+    AuthContextService,
   ],
   exports: [
     ClientsModule,
@@ -110,6 +123,8 @@ import { SharedModule, SharedService } from '../../../libs/shared/src';
     MESSAGE_SERVICE,
     CONVERSATION_SERVICE,
     PROFILE_SERVICE,
+    FRIEND_SERVICE,
+    AuthContextService,
   ],
 })
 export class AppModule {}

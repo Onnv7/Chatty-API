@@ -59,15 +59,6 @@
         "tsConfigPath": "libs/token/tsconfig.lib.json"
       }
     },
-    "friendship": {
-      "type": "application",
-      "root": "apps/friendship",
-      "entryFile": "main",
-      "sourceRoot": "apps/friendship/src",
-      "compilerOptions": {
-        "tsConfigPath": "apps/friendship/tsconfig.app.json"
-      }
-    },
     "user": {
       "type": "application",
       "root": "apps/user",

@@ -7,6 +7,7 @@ import {
   RegisterAccountRequestPayload,
   SendVerificationCodeRequestPayload,
   UpdatePasswordRequestPayload,
+  VerifyEmailCodeRequestPayload,
 } from './payload/auth.request';
 import { firstValueFrom } from 'rxjs';
 import {
@@ -53,6 +54,7 @@ export class AuthService implements OnModuleInit {
       throw new AppError(error);
     }
     return {
+      userId: data.profileId,
       accessToken: data.accessToken,
       refreshToken: data.refreshToken,
     };
@@ -62,21 +64,62 @@ export class AuthService implements OnModuleInit {
     accountId: number,
     body: UpdatePasswordRequestPayload,
   ): Promise<void> {
-    await firstValueFrom(
+    const { error, success } = await firstValueFrom(
       this.authServiceClient.updatePassword({
         accountId: accountId,
         ...body,
       }),
     );
+    if (!success) {
+      throw new AppError(error);
+    }
   }
 
   async sendVerificationCode(
     body: SendVerificationCodeRequestPayload,
   ): Promise<void> {
-    await firstValueFrom(
+    const { error, success } = await firstValueFrom(
       this.authServiceClient.sendVerificationCode({
         ...body,
       }),
     );
+    if (!success) {
+      throw new AppError(error);
+    }
+  }
+
+  async sendVerificationToken(
+    body: SendVerificationCodeRequestPayload,
+  ): Promise<void> {
+    const { error, success } = await firstValueFrom(
+      this.authServiceClient.sendVerificationToken({
+        ...body,
+      }),
+    );
+    if (!success) {
+      throw new AppError(error);
+    }
+  }
+
+  async verifyEmailCode(body: VerifyEmailCodeRequestPayload): Promise<void> {
+    const { error, success } = await firstValueFrom(
+      this.authServiceClient.verifyCode({
+        ...body,
+      }),
+    );
+    if (!success) {
+      throw new AppError(error);
+    }
+  }
+
+  async verifyEmailToken(token: string): Promise<void> {
+    const { error, success } = await firstValueFrom(
+      this.authServiceClient.verifyToken({
+        token: token,
+      }),
+    );
+    if (!success) {
+      throw new AppError(error);
+    }
   }
 }

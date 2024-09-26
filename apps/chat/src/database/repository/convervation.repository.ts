@@ -18,16 +18,20 @@ export class ConversationRepository {
     return conversation;
   }
 
+  async getByMemberIdList(memberIdList: number[]) {
+    const conversation = await this.conversationModel.findOne({
+      memberIdList: { $all: memberIdList },
+    });
+
+    return conversation;
+  }
+
   async create(data: Partial<Conversation>) {
     const conversation = await this.conversationModel.create(data);
     return conversation;
   }
 
   async getConversationPageById(id: number, page: number, size: number) {
-    console.log(
-      '🚀 ~ ConversationRepository ~ getConversationPageById ~ id:',
-      id,
-    );
     const [docs, totalDocs] = await Promise.all([
       this.conversationModel
         .find({ memberIdList: id })
@@ -37,11 +41,7 @@ export class ConversationRepository {
       this.conversationModel.countDocuments(),
     ]);
     const totalPage = Math.ceil(totalDocs / size);
-    console.log(
-      '🚀 ~ ConversationRepository ~ getConversationPageById ~ size: =>>>>>>>>',
-      id,
-      await this.conversationModel.find({ memberIdList: id }),
-    );
+
     return { totalPage, conversationList: docs };
   }
 }

@@ -15,6 +15,11 @@ async function bootstrap() {
     new AppExceptionHandlerFilter(),
   ];
 
+  app.enableCors({
+    origin: 'http://localhost:3000',
+    credentials: true, // Cho phép gửi thông tin xác thực như cookies
+  });
+
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true, // Bật chế độ chuyển đổi
@@ -22,6 +27,7 @@ async function bootstrap() {
     }),
   );
 
+  app.setGlobalPrefix('/api');
   app.useGlobalFilters(...filters);
   // app.connectMicroservice()
   // set interceptor

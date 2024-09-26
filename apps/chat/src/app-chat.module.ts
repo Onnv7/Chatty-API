@@ -12,11 +12,28 @@ import {
   ConversationSchema,
 } from './database/schema/conversation.schema';
 import { Message, MessageSchema } from './database/schema/message.schema';
-import { SharedModule, SharedService } from '../../../libs/shared/src';
+import {
+  PROFILE_SERVICE,
+  SharedModule,
+  SharedService,
+  USER_SERVICE_CLIENT,
+} from '../../../libs/shared/src';
+import { ClientGrpc, ClientsModule, Transport } from '@nestjs/microservices';
+import { join } from 'path';
+import {
+  PROFILE_SERVICE_NAME,
+  ProfileServiceClient,
+  USER_PACKAGE_NAME,
+} from '../../../libs/shared/src/types/user';
+import {
+  MessageChain,
+  MessageChainSchema,
+} from './database/schema/message-chain.schema';
 
 const schemaList = [
   { name: Conversation.name, schema: ConversationSchema },
   { name: Message.name, schema: MessageSchema },
+  // { name: MessageChain.name, schema: MessageChainSchema },
 ];
 
 const repository = [ConversationRepository, MessageRepository]; //ConversationRepository, MessageRepository
@@ -31,12 +48,39 @@ const repository = [ConversationRepository, MessageRepository]; //ConversationRe
       }),
       inject: [ConfigService],
     }),
+
+    ClientsModule.registerAsync([
+      {
+        inject: [SharedService],
+        name: USER_SERVICE_CLIENT,
+        useFactory: (configService: SharedService) => {
+          return {
+            transport: Transport.GRPC,
+            options: {
+              url: configService.env.USER_SERVER_URL,
+              package: USER_PACKAGE_NAME,
+              protoPath: join(__dirname, '../user.proto'),
+            },
+          };
+        },
+      },
+    ]),
     MongooseModule.forFeature(schemaList),
     ConversationModule,
     MessageModule,
   ],
   controllers: [AppChatController],
-  providers: [AppChatService, ...repository],
-  exports: [...repository],
+  providers: [
+    AppChatService,
+    ...repository,
+    {
+      provide: PROFILE_SERVICE,
+      useFactory: (client: ClientGrpc) => {
+        return client.getService<ProfileServiceClient>(PROFILE_SERVICE_NAME);
+      },
+      inject: [USER_SERVICE_CLIENT],
+    },
+  ],
+  exports: [...repository, SharedModule, PROFILE_SERVICE],
 })
 export class AppChatModule {}

@@ -14,6 +14,12 @@ import {
   UpdatePasswordResponse,
   SendVerificationCodeRequest,
   SendVerificationCodeResponse,
+  VerifyCodeRequest,
+  VerifyCodeResponse,
+  SendVerificationTokenRequest,
+  SendVerificationTokenResponse,
+  VerifyTokenRequest,
+  VerifyTokenResponse,
 } from '../../../../../libs/shared/src/types/auth';
 import { Observable } from 'rxjs';
 
@@ -21,6 +27,20 @@ import { Observable } from 'rxjs';
 @AuthServiceControllerMethods()
 export class AuthController implements AuthServiceController {
   constructor(private readonly authService: AuthService) {}
+  async verifyToken(request: VerifyTokenRequest): Promise<VerifyTokenResponse> {
+    const data = await this.authService.verifyToken(request);
+    return { success: true };
+  }
+  async sendVerificationToken(
+    request: SendVerificationTokenRequest,
+  ): Promise<SendVerificationTokenResponse> {
+    const data = await this.authService.sendVerificationToken(request);
+    return { success: true };
+  }
+  async verifyCode(request: VerifyCodeRequest): Promise<VerifyCodeResponse> {
+    const data = await this.authService.verifyCode(request);
+    return { success: true };
+  }
 
   async sendVerificationCode(
     request: SendVerificationCodeRequest,

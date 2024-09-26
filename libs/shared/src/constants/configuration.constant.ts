@@ -1,9 +1,11 @@
 export const AUTH_SERVICE_CLIENT = 'auth-service-client';
 export const USER_SERVICE_CLIENT = 'user-service-client';
 export const CHAT_SERVICE_CLIENT = 'chat-service-client';
-export const NOTIFICATION_SERVICE_CLIENT = 'notification-service-client';
+export const NOTIFICATION_SERVICE_CLIENT_KAFKA =
+  'notification-service-client-kafka';
 
-export const PROFILE_SERVICE = 'user-service-bean';
+export const PROFILE_SERVICE = 'profile-service-bean';
+export const FRIEND_SERVICE = 'friend-service-bean';
 export const MESSAGE_SERVICE = 'message-service-bean';
 export const CONVERSATION_SERVICE = 'conversation-service-bean';
 export const EMAIL_SERVICE = 'email-service';

@@ -12,12 +12,14 @@ import {
   AuthServiceClient,
   AUTH_SERVICE_NAME,
 } from '../../../../../libs/shared/src/types/auth';
+import { AuthContextService } from '../../libs/auth-context.service';
 
 @Injectable()
 export class JwtGuard implements CanActivate, OnModuleInit {
   private authServiceClient: AuthServiceClient;
   constructor(
     @Inject(AUTH_SERVICE_CLIENT) private readonly client: ClientGrpc,
+    private readonly authContextService: AuthContextService,
   ) {}
 
   onModuleInit() {
@@ -25,7 +27,6 @@ export class JwtGuard implements CanActivate, OnModuleInit {
       this.client.getService<AuthServiceClient>(AUTH_SERVICE_NAME);
   }
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    console.log('🚀 ~ AuthGuard ~ canActivate ~ data: 1', context.getType());
     if (context.getType() !== 'http') {
       return false;
     }
@@ -41,7 +42,11 @@ export class JwtGuard implements CanActivate, OnModuleInit {
     const { success, error, data } = await lastValueFrom(
       this.authServiceClient.verifyJwt({ token: jwt }),
     );
-
+    if (success)
+      this.authContextService.setUser({
+        id: data.id,
+        email: data.email,
+      });
     return success;
     // return this.authService.send({ cmd: 'verify-jwt' }, { jwt }).pipe(
     //   switchMap(({ exp }) => {

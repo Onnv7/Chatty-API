@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Gender } from '../../../../../libs/shared/src/constants/enum';
+import { FriendEntity } from './friend.entity';
 
 @Entity({ name: 'profile' })
 export class ProfileEntity {
@@ -37,7 +39,7 @@ export class ProfileEntity {
   })
   gender: Gender;
 
-  @Column({ name: 'birth_date', nullable: false })
+  @Column({ name: 'birth_date', type: 'date', nullable: false })
   birthDate: Date;
 
   @Column({ name: 'introduction', default: '' })
@@ -48,4 +50,15 @@ export class ProfileEntity {
 
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
+
+  // ==============================================
+  @OneToMany(() => FriendEntity, (friend) => friend.sender)
+  friendSendList: FriendEntity[];
+
+  @OneToMany(() => FriendEntity, (friend) => friend.sender)
+  friendReceivedList: FriendEntity[];
+
+  getFullName() {
+    return this.firstName + ' ' + this.lastName;
+  }
 }

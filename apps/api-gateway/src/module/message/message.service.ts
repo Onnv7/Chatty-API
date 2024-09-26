@@ -11,6 +11,8 @@ import {
 import { SendMessageRequestPayload } from './payload/message.request';
 import { lastValueFrom } from 'rxjs';
 import { AppError } from '../../../../../libs/shared/src';
+import { GetMessagePageResponsePayload } from './payload/message.response';
+import { AuthContextService } from '../../libs/auth-context.service';
 
 @Injectable()
 export class MessageService {
@@ -19,6 +21,7 @@ export class MessageService {
     private readonly messageServiceClient: MessageServiceClient,
     @Inject(CONVERSATION_SERVICE)
     private readonly conversationClient: ConversationServiceClient,
+    private readonly authContextService: AuthContextService,
   ) {}
 
   async sendMessage(body: SendMessageRequestPayload) {
@@ -26,17 +29,19 @@ export class MessageService {
       const {
         success,
         error,
-        data: { conversationId },
+        data: conversationData,
       } = await lastValueFrom(
         this.conversationClient.createConversation({
           memberIdList: body.memberIdList,
+          creatorId: this.authContextService.getUser().id,
         }),
       );
+
       if (!success) throw new AppError(error);
       const data = await lastValueFrom(
         this.messageServiceClient.sendMessage({
           content: body.content,
-          conversationId: conversationId,
+          conversationId: conversationData.conversationId,
           senderId: body.senderId,
         }),
       );
@@ -49,5 +54,22 @@ export class MessageService {
         senderId: body.senderId,
       }),
     );
+  }
+
+  async getMessagePage(
+    conversationId: string,
+    page: number,
+    size: number,
+  ): Promise<GetMessagePageResponsePayload> {
+    const { success, error, data } = await lastValueFrom(
+      this.messageServiceClient.getMessagePage({
+        conversationId: conversationId,
+        page: page,
+        size: size,
+      }),
+    );
+
+    if (!success) throw new AppError(error);
+    return data;
   }
 }

@@ -17,7 +17,7 @@ export const ApiQueryURL = (queries: IQuery[]) => {
     return ApiQuery({
       name: item.name,
       example: item.example,
-      required: item.required ?? false,
+      required: item.required ?? true,
       enum: item.enum,
     });
   });

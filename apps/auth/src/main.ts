@@ -15,7 +15,7 @@ async function bootstrap() {
 
   const app = await NestFactory.createMicroservice(
     AppAuthModule,
-    sharedService.getGRPCConfigServer(
+    sharedService.getGRPCServerConfig(
       AUTH_PACKAGE_NAME,
       join(__dirname, '../auth.proto'),
       sharedService.env.AUTH_SERVER_URL,

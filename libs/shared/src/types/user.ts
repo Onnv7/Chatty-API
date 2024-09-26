@@ -20,6 +20,77 @@ export interface ErrorResponse {
 export interface Empty {
 }
 
+export interface FriendCardData {
+  profileId: number;
+  avatarUrl: string;
+  fullName: string;
+  gender: string;
+}
+
+export interface SearchFriendData {
+  friendList: FriendCardData[];
+  totalPage: number;
+}
+
+export interface SearchFriendResponse {
+  data?: SearchFriendData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface SearchFriendRequest {
+  key?: string | undefined;
+  page: number;
+  size: number;
+  gender?: string | undefined;
+}
+
+export interface PendingInvitation {
+  invitationId: number;
+  profileId: number;
+  avatarUrl: string;
+  fullName: string;
+  gender: string;
+}
+
+export interface GetPendingInvitationListData {
+  invitationList: PendingInvitation[];
+  totalPage: number;
+}
+
+export interface GetPendingInvitationListResponse {
+  data?: GetPendingInvitationListData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface GetPendingInvitationListRequest {
+  userId: number;
+  page: number;
+  size: number;
+  actor: string;
+}
+
+export interface ProcessInvitationRequest {
+  invitationId: number;
+  action: string;
+}
+
+export interface ProcessInvitationResponse {
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface SendInvitationResponse {
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface SendInvitationRequest {
+  senderId: number;
+  receiverId: number;
+}
+
 export interface UpdateProfileByIdRequest {
   id: number;
   firstName: string;
@@ -134,3 +205,51 @@ export function ProfileServiceControllerMethods() {
 }
 
 export const PROFILE_SERVICE_NAME = "ProfileService";
+
+export interface FriendServiceClient {
+  sendInvitation(request: SendInvitationRequest): Observable<SendInvitationResponse>;
+
+  processInvitation(request: ProcessInvitationRequest): Observable<ProcessInvitationResponse>;
+
+  getPendingInvitationList(request: GetPendingInvitationListRequest): Observable<GetPendingInvitationListResponse>;
+
+  searchFriend(request: SearchFriendRequest): Observable<SearchFriendResponse>;
+}
+
+export interface FriendServiceController {
+  sendInvitation(
+    request: SendInvitationRequest,
+  ): Promise<SendInvitationResponse> | Observable<SendInvitationResponse> | SendInvitationResponse;
+
+  processInvitation(
+    request: ProcessInvitationRequest,
+  ): Promise<ProcessInvitationResponse> | Observable<ProcessInvitationResponse> | ProcessInvitationResponse;
+
+  getPendingInvitationList(
+    request: GetPendingInvitationListRequest,
+  ):
+    | Promise<GetPendingInvitationListResponse>
+    | Observable<GetPendingInvitationListResponse>
+    | GetPendingInvitationListResponse;
+
+  searchFriend(
+    request: SearchFriendRequest,
+  ): Promise<SearchFriendResponse> | Observable<SearchFriendResponse> | SearchFriendResponse;
+}
+
+export function FriendServiceControllerMethods() {
+  return function (constructor: Function) {
+    const grpcMethods: string[] = ["sendInvitation", "processInvitation", "getPendingInvitationList", "searchFriend"];
+    for (const method of grpcMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcMethod("FriendService", method)(constructor.prototype[method], method, descriptor);
+    }
+    const grpcStreamMethods: string[] = [];
+    for (const method of grpcStreamMethods) {
+      const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
+      GrpcStreamMethod("FriendService", method)(constructor.prototype[method], method, descriptor);
+    }
+  };
+}
+
+export const FRIEND_SERVICE_NAME = "FriendService";

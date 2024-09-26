@@ -12,6 +12,36 @@ message Empty {}
 
 service MessageService {
     rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {}
+    rpc GetMessagePage (GetMessageRequest) returns (GetMessageResponse) {}
+}
+
+message MessageData {
+    string content = 1;
+    string createdAt = 2;
+}
+
+message MessageChainData {
+    repeated MessageData messageChain = 1;
+    int32 senderId = 2;
+    string avatarUrl = 3;
+}
+
+message GetMessageData {
+    repeated MessageChainData messageList = 1;
+    int32 totalPage = 2;
+
+}
+
+message GetMessageResponse {
+    optional GetMessageData data = 1; 
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}
+
+message GetMessageRequest {
+    string conversationId = 1;
+    int32 page = 2 ;
+    int32 size = 3;
 }
 
 message SendMessageRequest {
@@ -41,6 +71,7 @@ message ConversationData {
     string imageUrl = 2;
     string lastMessage = 3;
     string lastSendAt = 4;
+    string id = 5;
 }
 
 message GetConversationListData {
@@ -56,6 +87,7 @@ message GetConversationListResponse {
 
 message CreateConversationRequest {
     repeated int32 memberIdList = 1;
+    int32 creatorId = 2;
 }
 message CreateConversationData {
     string conversationId = 1;
