@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class ConversationData {
   @ApiProperty()
+  id: string;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
@@ -12,6 +15,9 @@ export class ConversationData {
 
   @ApiProperty()
   lastSendAt: Date;
+
+  @ApiProperty()
+  senderId: number;
 }
 export class GetConversationPageRequestPayload {
   @ApiProperty()

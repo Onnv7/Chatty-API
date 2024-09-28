@@ -31,7 +31,7 @@ export class ConversationRepository {
     return conversation;
   }
 
-  async getConversationPageById(id: number, page: number, size: number) {
+  async getConversationPageByUserId(id: number, page: number, size: number) {
     const [docs, totalDocs] = await Promise.all([
       this.conversationModel
         .find({ memberIdList: id })

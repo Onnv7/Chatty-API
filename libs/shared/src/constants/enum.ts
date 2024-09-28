@@ -17,3 +17,10 @@ export enum ActorType {
   SENDER = 'SENDER',
   RECEIVER = 'RECEIVER',
 }
+
+export enum Relationship {
+  NONE = 'NONE',
+  FRIEND = 'FRIEND',
+  SEND = 'SEND',
+  PENDING = 'PENDING',
+}

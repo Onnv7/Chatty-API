@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { FriendRepository } from '../../database/repository/friend.repository';
 import {
+  FriendCardData,
   GetPendingInvitationListData,
   GetPendingInvitationListRequest,
   GetPendingInvitationListResponse,
@@ -16,6 +17,7 @@ import {
   FriendStatus,
   Gender,
   InvitationAction,
+  Relationship,
 } from '../../../../../libs/shared/src/constants/enum';
 import { ProfileRepository } from '../../database/repository/profile.repository';
 import { FriendEntity } from '../../database/entity/friend.entity';
@@ -86,7 +88,7 @@ export class FriendService {
       { page: body.page, limit: body.size },
       options,
     );
-    console.log(page.items[0].sender);
+
     return {
       totalPage: page.meta.totalPages,
       invitationList: page.items.map((invitation) => {
@@ -99,7 +101,7 @@ export class FriendService {
           invitationId: invitation.id,
           profileId: profile.id,
           avatarUrl: profile.avatarUrl,
-          fullName: profile.getFullName(),
+          fullName: profile.firstName + ' ' + profile.lastName,
           gender: profile.gender,
         };
       }),
@@ -112,9 +114,7 @@ export class FriendService {
       where: searchFields
         .map((field) => {
           const condition: any = {};
-          if (body.key) {
-            condition[field] = Like(`%${body.key}%`);
-          }
+          condition[field] = Like(`%${body.key}%`);
           if (body.gender) {
             condition.gender = body.gender as Gender;
           }
@@ -127,15 +127,40 @@ export class FriendService {
       { page: body.page, limit: body.size },
       options,
     );
+    const friendList: FriendCardData[] = await Promise.all(
+      page.items.map(async (friend) => {
+        const relationship = await this.friendRepository.findOne({
+          where: [
+            {
+              sender: { id: body.userId },
+              receiver: { id: friend.id },
+            },
+            {
+              sender: { id: friend.id },
+              receiver: { id: body.userId },
+            },
+          ],
+        });
+        return {
+          profileId: friend.id,
+          avatarUrl: friend.avatarUrl,
+          fullName: friend.firstName + ' ' + friend.lastName,
+          gender: friend.gender,
+          relationship: !relationship
+            ? Relationship.NONE
+            : relationship.status === FriendStatus.ACCEPTED
+              ? Relationship.FRIEND
+              : relationship.sender.id === body.userId
+                ? Relationship.SEND
+                : Relationship.PENDING,
+          invitationId: relationship?.id,
+        };
+      }),
+    );
 
     return {
       totalPage: page.meta.totalPages,
-      friendList: page.items.map((friend) => ({
-        profileId: friend.id,
-        avatarUrl: friend.avatarUrl,
-        fullName: friend.getFullName(),
-        gender: friend.gender,
-      })),
+      friendList: friendList,
     };
   }
 }

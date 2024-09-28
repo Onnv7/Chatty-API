@@ -25,6 +25,8 @@ export interface FriendCardData {
   avatarUrl: string;
   fullName: string;
   gender: string;
+  relationship: string;
+  invitationId?: number | undefined;
 }
 
 export interface SearchFriendData {
@@ -39,7 +41,8 @@ export interface SearchFriendResponse {
 }
 
 export interface SearchFriendRequest {
-  key?: string | undefined;
+  userId: number;
+  key: string;
   page: number;
   size: number;
   gender?: string | undefined;

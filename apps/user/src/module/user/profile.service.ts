@@ -10,10 +10,7 @@ import {
   UpdateProfileByIdRequest,
 } from '../../../../../libs/shared/src/types/user';
 import { AppError, ErrorResponseData } from '../../../../../libs/shared/src';
-import {
-  dateFromString,
-  formatDate,
-} from '../../../../../libs/shared/src/util/date.util';
+import { dateFromString } from '../../../../../libs/shared/src/util/date.util';
 import { Gender } from '../../../../../libs/shared/src/constants/enum';
 
 @Injectable()
@@ -66,12 +63,13 @@ export class ProfileService {
     const profileEntity = await this.profileRepository.findOneBy({
       id: body.id,
     });
+
     return {
       email: profileEntity.email,
       firstName: profileEntity.firstName,
       lastName: profileEntity.lastName,
       gender: profileEntity.lastName,
-      birthDate: formatDate(profileEntity.birthDate),
+      birthDate: profileEntity.birthDate.toString(),
       avatarUrl: profileEntity.avatarUrl,
     };
   }

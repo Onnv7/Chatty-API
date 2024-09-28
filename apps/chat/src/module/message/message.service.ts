@@ -14,7 +14,6 @@ import {
 import { Message } from '../../database/schema/message.schema';
 import { ProfileServiceClient } from '../../../../../libs/shared/src/types/user';
 import { lastValueFrom } from 'rxjs';
-import { MessageChainData } from '../../../../api-gateway/src/module/message/payload/message.response';
 
 @Injectable()
 export class MessageService {
@@ -56,8 +55,6 @@ export class MessageService {
   }
 
   async sendMessage(body: SendMessageRequest) {
-    if (body.conversationId) {
-    }
     const conversation = await this.conversationRepository.getById(
       body.conversationId,
     );
@@ -87,6 +84,10 @@ export class MessageService {
     }
 
     conversation.lastMessage = body.content;
+    console.log(
+      '🚀 ~ MessageService ~ sendMessage ~ conversation:',
+      conversation,
+    );
     conversation.senderId = body.senderId;
     await conversation.save();
   }

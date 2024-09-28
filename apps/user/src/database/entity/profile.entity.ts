@@ -57,8 +57,4 @@ export class ProfileEntity {
 
   @OneToMany(() => FriendEntity, (friend) => friend.sender)
   friendReceivedList: FriendEntity[];
-
-  getFullName() {
-    return this.firstName + ' ' + this.lastName;
-  }
 }

@@ -31,6 +31,8 @@ message FriendCardData {
   string avatarUrl = 3;
   string fullName = 4;
   string gender = 5;
+  string relationship = 6;
+  optional int32 invitationId = 7;
 }
 
 message SearchFriendData {
@@ -45,10 +47,11 @@ message SearchFriendResponse {
 }
 
 message SearchFriendRequest {
-  optional string key = 1;
-  int32 page = 2;
-  int32 size = 3;
-  optional string gender = 4;
+  int32 userId = 1;
+  string key = 2;
+  int32 page = 3;
+  int32 size = 4;
+  optional string gender = 5;
 }
 
 message PendingInvitation {

@@ -2,7 +2,7 @@ import { Prop, SchemaFactory, Schema } from '@nestjs/mongoose';
 
 @Schema({ timestamps: true })
 export class Conversation {
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true })
   memberIdList: number[];
 
   @Prop({})

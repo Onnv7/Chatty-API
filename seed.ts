@@ -1,13 +1,17 @@
 import { Faker, en, en_HK, vi } from '@faker-js/faker';
 import axios from 'axios';
-
+const config = {
+  headers: {
+    authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTgsImVtYWlsIjoibnZhNjExMjAwMkBnbWFpbC5jb20iLCJpYXQiOjE3Mjc0NDgyNDEsImV4cCI6MTcyODA1MzA0MX0.04c_1Gm2GqCqrrP7RNh40nYAbuiGmQotIGK7vbJtMVg`, // Thêm token vào header
+  },
+};
 const faker = new Faker({
   locale: [en, vi],
 });
 
 const gender = faker.helpers.arrayElement(['FEMALE', 'MALE']);
 const http = axios.create({
-  baseURL: 'http://localhost:8000',
+  baseURL: 'http://localhost:8000/api',
 });
 function getCombinations(array) {
   const combinations = [];
@@ -21,9 +25,10 @@ function getCombinations(array) {
 
   return combinations;
 }
-const numberArray = Array.from({ length: 10 }, (_, index) => index + 1);
+const userIdList = Array.from({ length: 18 }, (_, index) => index + 1);
+console.log('🚀 ~ userIdList:', userIdList);
 
-const memberIdPairList = getCombinations(numberArray);
+const memberIdPairList = getCombinations(userIdList);
 
 // Sử dụng faker để random chọn 1 cặp từ mảng
 const randomPair = faker.helpers.arrayElement(memberIdPairList);
@@ -57,9 +62,11 @@ const createAccountApi = async () => {
 
 // CONVERSATION
 export function createConversationData() {
-  const randomPair = faker.helpers.arrayElement(memberIdPairList);
+  const other = faker.helpers.arrayElement(userIdList);
   return {
     memberIdList: randomPair,
+    senderId: faker.helpers.arrayElement(randomPair),
+    content: faker.lorem.text(),
   };
 }
 
@@ -70,7 +77,7 @@ export const conversationData = faker.helpers.multiple(createConversationData, {
 const createConversationApi = async () => {
   for (const conversation of conversationData) {
     const data = await http
-      .post('/conversation', conversation)
+      .post('/message/send', conversation, config)
       .then((data) => console.log(data.data))
       .catch((err) => console.log(err.response?.data.error));
   }
@@ -99,6 +106,7 @@ export const sendMessageData = faker.helpers.multiple(
     const randomPair = faker.helpers.arrayElement(memberIdPairList);
 
     const senderId = faker.helpers.arrayElement(randomPair);
+
     return {
       content: faker.lorem.sentence(),
       senderId: senderId,
@@ -146,17 +154,15 @@ const createSendMessageApi = async (
       conversationId: conversationId,
     };
 
-    const config = {
-      headers: {
-        authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJudmFAIiwiaWF0IjoxNzI3MDc5OTMxLCJleHAiOjE3Mjc2ODQ3MzF9.jb1dvffkkGRd4t1r2zfLxz8ueRU6fdweCtMONaYZi44`, // Thêm token vào header
-      },
-    };
     const data = await http
       .post('/message/send', dataBody, config)
       .then((data) => console.log(data.data))
       .catch((err) => console.log(err.response?.data.error));
   }
 };
-createSendMessageApi(10, [1, 2], '66f125a35df046ab588905b5');
+
+// createSendMessageApi(10, [1, 2], '66f125a35df046ab588905b5');
+
+createConversationApi();
 // createAccountApi();
 // createConversationApi();

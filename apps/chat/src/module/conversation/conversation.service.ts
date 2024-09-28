@@ -29,7 +29,7 @@ export class ConversationService {
     body: GetConversationListRequest,
   ): Promise<GetConversationListData> {
     const conversationPage =
-      await this.conversationRepository.getConversationPageById(
+      await this.conversationRepository.getConversationPageByUserId(
         body.profileId,
         body.page,
         body.size,
@@ -49,6 +49,7 @@ export class ConversationService {
           name: data.firstName + ' ' + data.lastName,
           imageUrl: data.avatarUrl,
           lastMessage: conversation.lastMessage,
+          senderId: conversation.senderId,
         };
       }),
     );

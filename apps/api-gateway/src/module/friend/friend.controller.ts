@@ -51,6 +51,7 @@ export class FriendController {
     @Query('page') page: number,
     @Query('size') size: number,
   ): Promise<ResponseAPI<GetReceivedInvitationListResponsePayload>> {
+    console.log('🚀 ~ FriendController ~ userId:', userId);
     const data = await this.friendService.getReceivedInvitationList(
       userId,
       actor,
@@ -64,16 +65,23 @@ export class FriendController {
   @ApiQueryURL([
     { name: 'page', example: 1 },
     { name: 'size', example: 10 },
-    { name: 'key', example: SwaggerConstant.SEARCH_FRIEND_EX, required: false },
+    { name: 'key', example: SwaggerConstant.SEARCH_FRIEND_EX },
     { name: 'gender', enum: Gender, example: Gender.FEMALE, required: false },
   ])
   async searchFriend(
     @Query('page') page: number,
     @Query('size') size: number,
-    @Query('key') key?: string,
+    @Query('userId') userId: number,
+    @Query('key') key: string,
     @Query('gender') gender?: Gender,
   ): Promise<ResponseAPI<SearchFriendResponsePayload>> {
-    const data = await this.friendService.searchFriend(page, size, key, gender);
+    const data = await this.friendService.searchFriend(
+      page,
+      size,
+      userId,
+      key,
+      gender,
+    );
     return { data, message: ResponseMessage.GET };
   }
 }

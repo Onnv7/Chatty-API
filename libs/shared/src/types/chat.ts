@@ -70,6 +70,7 @@ export interface ConversationData {
   imageUrl: string;
   lastMessage: string;
   lastSendAt: string;
+  senderId: number;
   id: string;
 }
 

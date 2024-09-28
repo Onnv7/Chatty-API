@@ -38,12 +38,15 @@ export class FriendData {
 
   @ApiProperty()
   gender: string;
+
+  @ApiProperty()
+  invitationId?: number;
 }
 
 export class SearchFriendResponsePayload {
   @ApiProperty()
   totalPage: number;
 
-  @ApiProperty({ type: [InvitationData] })
+  @ApiProperty({ type: [FriendData] })
   friendList: FriendData[];
 }

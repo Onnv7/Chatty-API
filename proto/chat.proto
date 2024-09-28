@@ -59,7 +59,18 @@ message SendMessageResponse {
 service ConversationService {
     rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
     rpc GetConversationPage (GetConversationListRequest) returns (GetConversationListResponse) {}
+    // rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {}
 }
+
+// message GetConversationResponse {
+//     string imageUrl = 1;
+//     string roomName = 2;
+// }
+
+// message GetConversationRequest {
+//     int32 userId = 1;
+//     string conversationId = 2;
+// }
 message GetConversationListRequest {
     int32 profileId = 1;
     int32 page = 2 ;
@@ -71,7 +82,8 @@ message ConversationData {
     string imageUrl = 2;
     string lastMessage = 3;
     string lastSendAt = 4;
-    string id = 5;
+    int32 senderId = 5;
+    string id = 6;
 }
 
 message GetConversationListData {

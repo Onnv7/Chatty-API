@@ -68,18 +68,23 @@ export class FriendService {
     );
 
     if (!success) throw new AppError(error);
-    return data;
+    return {
+      totalPage: data.totalPage,
+      invitationList: data.invitationList ? data.invitationList : [],
+    };
   }
 
   async searchFriend(
     page: number,
     size: number,
-    key?: string,
+    userId: number,
+    key: string,
     gender?: Gender,
   ): Promise<SearchFriendResponsePayload> {
     const { data, success, error } = await lastValueFrom(
       this.friendServiceClient.searchFriend({
         key,
+        userId,
         gender,
         page,
         size,
@@ -87,6 +92,9 @@ export class FriendService {
     );
 
     if (!success) throw new AppError(error);
-    return data;
+    return {
+      totalPage: data.totalPage,
+      friendList: data.friendList ? data.friendList : [],
+    };
   }
 }
