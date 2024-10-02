@@ -13,7 +13,10 @@ import { SendMessageRequestPayload } from './payload/message.request';
 import { ResponseAPI } from '../../common/model/response-api';
 import { ResponseMessage } from '../../../../../libs/shared/src';
 import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
-import { GetMessagePageResponsePayload } from './payload/message.response';
+import {
+  GetMessagePageResponsePayload,
+  SendMessageResponsePayload,
+} from './payload/message.response';
 import { JwtGuard } from '../../common/guard/jwt.guard';
 
 @ApiTags('MESSAGE')
@@ -26,9 +29,9 @@ export class MessageController {
   @Post('/send')
   async sendMessage(
     @Body() body: SendMessageRequestPayload,
-  ): Promise<ResponseAPI<void>> {
+  ): Promise<ResponseAPI<SendMessageResponsePayload>> {
     const data = await this.messageService.sendMessage(body);
-    return { message: ResponseMessage.CREATE };
+    return { data, message: ResponseMessage.CREATE };
   }
 
   @Get('/conversation/:conversationId')

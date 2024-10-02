@@ -8,7 +8,6 @@ export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
   async sendEmail(data: SendEmailVerificationData) {
-    console.log('🚀 ~ MailService ~ sendEmail ~ data:', data);
     if (data.type === 'code') {
       const sendResult: SentMessageInfo = await this.mailerService.sendMail({
         to: data.email,

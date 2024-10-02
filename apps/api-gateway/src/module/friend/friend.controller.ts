@@ -51,7 +51,6 @@ export class FriendController {
     @Query('page') page: number,
     @Query('size') size: number,
   ): Promise<ResponseAPI<GetReceivedInvitationListResponsePayload>> {
-    console.log('🚀 ~ FriendController ~ userId:', userId);
     const data = await this.friendService.getReceivedInvitationList(
       userId,
       actor,

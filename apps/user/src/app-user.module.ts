@@ -7,7 +7,7 @@ import { ProfileRepository } from './database/repository/profile.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import TypeOrmConfig from './common/config/typeorm.config';
 import { CreateProfileHandler } from './cqrs/command/handler/create-profile.cmd.handler';
-import { SharedModule, SharedService } from '../../../libs/shared/src';
+import { SharedModule } from '../../../libs/shared/src';
 import { ProfileEntity } from './database/entity/profile.entity';
 import { FriendRepository } from './database/repository/friend.repository';
 import { FriendEntity } from './database/entity/friend.entity';

@@ -18,7 +18,7 @@ export class MessageRepository {
         .find({
           conversationId: conversationId,
         })
-        .sort({ createdAt: 1 })
+        .sort({ createdAt: -1 })
         .skip((page - 1) * size)
         .limit(size),
       this.messageModel.countDocuments(),

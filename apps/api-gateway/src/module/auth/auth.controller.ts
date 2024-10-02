@@ -33,7 +33,6 @@ export class AuthController {
   async createAccount(
     @Body() body: RegisterAccountRequestPayload,
   ): Promise<ResponseAPI<any>> {
-    console.log('🚀 ~ AuthController ~ body:', body);
     const data = await this.authService.createAccount(body);
 
     return { data: data, message: ResponseMessage.CREATE };

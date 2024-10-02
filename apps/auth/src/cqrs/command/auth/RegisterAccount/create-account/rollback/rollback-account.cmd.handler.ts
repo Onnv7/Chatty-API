@@ -18,7 +18,6 @@ export class RollbackAccountHandler
     const accountEntity = await this.accountRepository.findOneBy({
       id: command.accountId,
     });
-    console.log('deleting');
     await this.accountRepository.remove(accountEntity);
   }
 }

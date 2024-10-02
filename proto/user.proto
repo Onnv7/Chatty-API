@@ -124,6 +124,8 @@ message GetProfileByIdData {
   string lastName = 4;
   string gender = 5;
   string birthDate = 6;
+  string activeStatus = 7;
+  string lastActiveAt = 8;
 
 }
 

@@ -13,6 +13,8 @@ import {
 } from './database/schema/conversation.schema';
 import { Message, MessageSchema } from './database/schema/message.schema';
 import {
+  KAFKA_CONVERSATION_CLIENT_ID,
+  NOTIFICATION_SERVICE_CLIENT_KAFKA,
   PROFILE_SERVICE,
   SharedModule,
   SharedService,
@@ -64,6 +66,19 @@ const repository = [ConversationRepository, MessageRepository]; //ConversationRe
           };
         },
       },
+      {
+        name: NOTIFICATION_SERVICE_CLIENT_KAFKA,
+        useFactory: (sharedService: SharedService) => ({
+          transport: Transport.KAFKA,
+          options: {
+            client: {
+              clientId: KAFKA_CONVERSATION_CLIENT_ID,
+              brokers: [sharedService.env.KAFKA_BROKER],
+            },
+          },
+        }),
+        inject: [SharedService],
+      },
     ]),
     MongooseModule.forFeature(schemaList),
     ConversationModule,
@@ -81,6 +96,6 @@ const repository = [ConversationRepository, MessageRepository]; //ConversationRe
       inject: [USER_SERVICE_CLIENT],
     },
   ],
-  exports: [...repository, SharedModule, PROFILE_SERVICE],
+  exports: [...repository, SharedModule, PROFILE_SERVICE, ClientsModule],
 })
 export class AppChatModule {}

@@ -7,11 +7,15 @@ import {
 import {
   ConversationServiceClient,
   MessageServiceClient,
+  SendMessageResponse,
 } from '../../../../../libs/shared/src/types/chat';
 import { SendMessageRequestPayload } from './payload/message.request';
 import { lastValueFrom } from 'rxjs';
 import { AppError } from '../../../../../libs/shared/src';
-import { GetMessagePageResponsePayload } from './payload/message.response';
+import {
+  GetMessagePageResponsePayload,
+  SendMessageResponsePayload,
+} from './payload/message.response';
 import { AuthContextService } from '../../libs/auth-context.service';
 
 @Injectable()
@@ -24,7 +28,10 @@ export class MessageService {
     private readonly authContextService: AuthContextService,
   ) {}
 
-  async sendMessage(body: SendMessageRequestPayload) {
+  async sendMessage(
+    body: SendMessageRequestPayload,
+  ): Promise<SendMessageResponsePayload> {
+    let data: SendMessageResponse;
     if (body.memberIdList) {
       const {
         success,
@@ -38,7 +45,7 @@ export class MessageService {
       );
 
       if (!success) throw new AppError(error);
-      const data = await lastValueFrom(
+      data = await lastValueFrom(
         this.messageServiceClient.sendMessage({
           content: body.content,
           conversationId: conversationData.conversationId,
@@ -47,13 +54,16 @@ export class MessageService {
       );
       return;
     }
-    const data = await lastValueFrom(
+    data = await lastValueFrom(
       this.messageServiceClient.sendMessage({
         content: body.content,
         conversationId: body.conversationId,
         senderId: body.senderId,
       }),
     );
+
+    if (!data.success) throw new AppError(data.error);
+    return data.data;
   }
 
   async getMessagePage(

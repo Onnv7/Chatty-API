@@ -6,7 +6,10 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Gender } from '../../../../../libs/shared/src/constants/enum';
+import {
+  ActiveStatus,
+  Gender,
+} from '../../../../../libs/shared/src/constants/enum';
 import { FriendEntity } from './friend.entity';
 
 @Entity({ name: 'profile' })
@@ -32,7 +35,6 @@ export class ProfileEntity {
 
   @Column({
     name: 'gender',
-    nullable: false,
     enum: Gender,
     type: 'enum',
     default: Gender.MALE,
@@ -51,6 +53,17 @@ export class ProfileEntity {
   @UpdateDateColumn({ name: 'updated_at', type: 'timestamp' })
   updatedAt: Date;
 
+  @Column({
+    name: 'active_status',
+    nullable: false,
+    enum: ActiveStatus,
+    type: 'enum',
+    default: ActiveStatus.OFFLINE,
+  })
+  activeStatus: ActiveStatus;
+
+  @Column({ name: 'last_active_at', type: 'timestamp', nullable: true })
+  lastActiveAt: Date;
   // ==============================================
   @OneToMany(() => FriendEntity, (friend) => friend.sender)
   friendSendList: FriendEntity[];

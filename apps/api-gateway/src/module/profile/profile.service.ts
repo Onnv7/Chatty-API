@@ -25,7 +25,6 @@ export class ProfileService {
     const { data, error, success } = await lastValueFrom(
       this.profileServiceClient.searchProfile({ email: email }),
     );
-    console.log('🚀 ~ UserService ~ getUserByEmail ~ success:', success);
     if (!success) throw new AppError(error);
     return data as SearchProfileResponsePayload;
   }

@@ -13,6 +13,9 @@ import {
 } from '../../../../../libs/shared/src/types/user';
 import { Observable } from 'rxjs';
 import { ProfileService } from './profile.service';
+import { UserActiveData } from '../../../../../libs/shared/src/types/kafka/notification';
+import { KAFKA_USER_ACTION_TOPIC } from '../../../../../libs/shared/src';
+import { EventPattern, Payload, Transport } from '@nestjs/microservices';
 
 @Controller('user')
 @ProfileServiceControllerMethods()
@@ -42,5 +45,10 @@ export class ProfileController implements ProfileServiceController {
   ): Promise<CreateUserProfileResponse> {
     const data = await this.userService.createUserProfile(request);
     return { success: true, data };
+  }
+
+  @EventPattern(KAFKA_USER_ACTION_TOPIC, Transport.KAFKA)
+  async sendNewMessage(@Payload() data: UserActiveData) {
+    await this.userService.updateUserAction(data);
   }
 }

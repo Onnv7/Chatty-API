@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ActiveStatus } from '../../../../../../libs/shared/src/constants/enum';
 
 export class ConversationData {
   @ApiProperty()
@@ -18,11 +19,36 @@ export class ConversationData {
 
   @ApiProperty()
   senderId: number;
+
+  @ApiProperty()
+  activeStatus: ActiveStatus;
+
+  @ApiProperty()
+  lastActiveAt: Date;
+
+  @ApiProperty()
+  friendId?: number;
 }
-export class GetConversationPageRequestPayload {
+export class GetConversationPageResponsePayload {
   @ApiProperty()
   totalPage: number;
 
   @ApiProperty({ type: [ConversationData] })
   conversationList: ConversationData[];
+}
+
+export class ConversationMemberData {
+  @ApiProperty()
+  id: number;
+
+  @ApiProperty()
+  name: string;
+
+  @ApiProperty()
+  avatarUrl: string;
+}
+
+export class GetConversationRequestPayload {
+  @ApiProperty()
+  memberList: ConversationMemberData[];
 }

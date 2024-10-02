@@ -24,6 +24,6 @@ export class MessageController implements MessageServiceController {
 
   async sendMessage(request: SendMessageRequest): Promise<SendMessageResponse> {
     const data = await this.messageService.sendMessage(request);
-    return { success: true };
+    return { data, success: true };
   }
 }

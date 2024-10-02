@@ -7,6 +7,9 @@ export class MessageData {
 
   @ApiProperty()
   createdAt: string;
+
+  @ApiProperty()
+  id: string;
 }
 
 export class MessageChainData {
@@ -15,9 +18,6 @@ export class MessageChainData {
 
   @ApiProperty()
   senderId: number;
-
-  @ApiProperty()
-  avatarUrl: string;
 }
 export class GetMessagePageResponsePayload {
   @ApiProperty()
@@ -25,4 +25,9 @@ export class GetMessagePageResponsePayload {
 
   @ApiProperty({ type: [MessageChainData] })
   messageList: MessageChainData[];
+}
+
+export class SendMessageResponsePayload {
+  @ApiProperty()
+  id: string;
 }

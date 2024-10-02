@@ -9,7 +9,6 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 112233
       POSTGRES_DB: household
-
   chatty_mongo:
     image: mongo:latest
     container_name: chatty_mongo
@@ -41,3 +40,10 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     depends_on:
       - zookeeper
+  chatty_redis:
+    image: redis/redis-stack:7.4.0-v0
+    container_name: chatty_redis
+    hostname: redis
+    restart: always
+    ports:
+      - '6543:6379'

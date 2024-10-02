@@ -18,12 +18,12 @@ service MessageService {
 message MessageData {
     string content = 1;
     string createdAt = 2;
+    string id = 3;
 }
 
 message MessageChainData {
     repeated MessageData messageChain = 1;
     int32 senderId = 2;
-    string avatarUrl = 3;
 }
 
 message GetMessageData {
@@ -50,27 +50,45 @@ message SendMessageRequest {
     string conversationId = 3;
 }
 
+message SendMessageData {
+    string id = 1;
+}
+
 message SendMessageResponse {
-    optional ErrorResponse error = 1; 
-    bool success = 2; 
+    optional SendMessageData data = 1;
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
 }
 
 
 service ConversationService {
     rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
     rpc GetConversationPage (GetConversationListRequest) returns (GetConversationListResponse) {}
-    // rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {}
+    rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {}
 }
 
-// message GetConversationResponse {
-//     string imageUrl = 1;
-//     string roomName = 2;
-// }
+message ConversationMemberData {
+    int32 id = 1;
+    string name = 2;
+    string avatarUrl = 3;
+}
 
-// message GetConversationRequest {
-//     int32 userId = 1;
-//     string conversationId = 2;
-// }
+
+message ConversationInfoData {
+    repeated ConversationMemberData memberList = 1;
+}
+
+message GetConversationResponse {
+    optional ConversationInfoData data = 1;
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}
+
+message GetConversationRequest {
+    string conversationId = 1;
+}
+
+
 message GetConversationListRequest {
     int32 profileId = 1;
     int32 page = 2 ;
@@ -84,6 +102,9 @@ message ConversationData {
     string lastSendAt = 4;
     int32 senderId = 5;
     string id = 6;
+    string activeStatus = 7;
+    string lastActiveAt = 8;
+    optional int32 friendId = 9;
 }
 
 message GetConversationListData {

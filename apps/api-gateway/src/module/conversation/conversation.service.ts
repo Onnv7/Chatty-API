@@ -4,9 +4,13 @@ import { ConversationServiceClient } from '../../../../../libs/shared/src/types/
 import { CreateConversationRequestPayload } from './payload/conversation.request';
 import { lastValueFrom } from 'rxjs';
 import { AppError } from '../../../../../libs/shared/src';
-import { GetConversationPageRequestPayload } from './payload/conversation.response';
+import {
+  GetConversationPageResponsePayload,
+  GetConversationRequestPayload,
+} from './payload/conversation.response';
 import { dateFromString } from '../../../../../libs/shared/src/util/date.util';
 import { AuthContextService } from '../../libs/auth-context.service';
+import { ActiveStatus } from '../../../../../libs/shared/src/constants/enum';
 
 @Injectable()
 export class ConversationService {
@@ -30,7 +34,7 @@ export class ConversationService {
     userId: number,
     page: number,
     size: number,
-  ): Promise<GetConversationPageRequestPayload> {
+  ): Promise<GetConversationPageResponsePayload> {
     const { success, error, data } = await lastValueFrom(
       this.conversationClient.getConversationPage({
         profileId: userId,
@@ -46,8 +50,25 @@ export class ConversationService {
         ? data.conversationList.map((item) => ({
             ...item,
             lastSendAt: dateFromString(item.lastSendAt),
+            lastActiveAt: dateFromString(item.lastActiveAt),
+            activeStatus: item.activeStatus as ActiveStatus,
           }))
         : [],
+    };
+  }
+
+  async getConversation(
+    conversationId: string,
+  ): Promise<GetConversationRequestPayload> {
+    const { success, error, data } = await lastValueFrom(
+      this.conversationClient.getConversation({
+        conversationId: conversationId,
+      }),
+    );
+    if (!success) throw new AppError(error);
+
+    return {
+      memberList: data.memberList,
     };
   }
 }

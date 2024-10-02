@@ -53,6 +53,7 @@ export class AuthService implements OnModuleInit, OnApplicationShutdown {
     @Inject(NOTIFICATION_SERVICE_CLIENT_KAFKA)
     private readonly notificationClient: ClientKafka,
   ) {}
+
   async onApplicationShutdown(signal?: string) {
     await this.notificationClient.close();
   }

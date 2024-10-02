@@ -2,9 +2,10 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transport } from '@nestjs/microservices';
 import {
-  KAFKA_NOTIFICATION_CLIENT_ID,
-  KAFKA_NOTIFICATION_GROUP_ID,
+  KAFKA_NOTIFICATION_SERVER_CLIENT_ID,
+  KAFKA_NOTIFICATION_SERVER_GROUP_ID,
 } from './constants';
+import { RedisModuleAsyncOptions } from '@nestjs-modules/ioredis';
 
 @Injectable()
 export class SharedService {
@@ -21,6 +22,8 @@ export class SharedService {
     MAIL_PASSWORD: '',
     MAIL_FROM: '',
     MAIN_TRANSPORT: '',
+    REDIS_HOST: '',
+    REDIS_PORT: 6543,
   };
   constructor(private readonly configService: ConfigService) {
     this.env = {
@@ -38,6 +41,8 @@ export class SharedService {
       MAIL_PASSWORD: this.configService.get('MAIL_PASSWORD'),
       MAIL_FROM: this.configService.get('MAIL_FROM'),
       MAIN_TRANSPORT: this.configService.get('MAIN_TRANSPORT'),
+      REDIS_HOST: this.configService.get('REDIS_HOST'),
+      REDIS_PORT: Number(this.configService.get('REDIS_PORT')),
     };
   }
 
@@ -63,18 +68,34 @@ export class SharedService {
     };
   }
 
-  getKafkaConfigServer(kafkaBroker: string[]) {
+  getKafkaConfigServer(
+    clientId: string,
+    groupId: string,
+    kafkaBroker: string[],
+  ) {
     return {
       transport: Transport.KAFKA,
       options: {
         client: {
-          clientId: KAFKA_NOTIFICATION_CLIENT_ID,
+          clientId: clientId,
           brokers: kafkaBroker,
         },
         consumer: {
-          groupId: KAFKA_NOTIFICATION_GROUP_ID,
+          groupId: groupId,
         },
       },
+    };
+  }
+
+  getRedisConfig(): RedisModuleAsyncOptions {
+    return {
+      useFactory: async () => ({
+        type: 'single',
+        url: 'redis://localhost:6379',
+        options: {
+          db: 0,
+        },
+      }),
     };
   }
 }

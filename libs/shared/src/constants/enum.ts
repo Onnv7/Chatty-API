@@ -24,3 +24,8 @@ export enum Relationship {
   SEND = 'SEND',
   PENDING = 'PENDING',
 }
+
+export enum ActiveStatus {
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
+}

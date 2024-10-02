@@ -1,14 +1,14 @@
 // message.schema.ts
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { Document } from 'mongoose';
-import { MessageChain } from './message-chain.schema';
+import { MessageChain, MessageChainSchema } from './message-chain.schema';
 
 @Schema({ timestamps: true })
 export class Message {
   @Prop({ required: true })
   senderId: number;
 
-  @Prop({ type: [MessageChain], required: true }) // Nhúng một mảng MessageChain
+  @Prop({ type: [MessageChainSchema], required: true })
   messageChain: MessageChain[];
 
   @Prop({

@@ -18,11 +18,7 @@ import {
 import { join } from 'path';
 import { AUTH_PACKAGE_NAME } from '../../../libs/shared/src/types/auth';
 import {
-  EMAIL_SERVICE,
   KAFKA_AUTH_CLIENT_ID,
-  KAFKA_AUTH_GROUP_ID,
-  KAFKA_NOTIFICATION_CLIENT_ID,
-  KAFKA_NOTIFICATION_GROUP_ID,
   NOTIFICATION_SERVICE_CLIENT_KAFKA,
   PROFILE_SERVICE,
   USER_SERVICE_CLIENT,

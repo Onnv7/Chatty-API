@@ -11,7 +11,11 @@ import {
 } from '../../../../../libs/shared/src/types/user';
 import { AppError, ErrorResponseData } from '../../../../../libs/shared/src';
 import { dateFromString } from '../../../../../libs/shared/src/util/date.util';
-import { Gender } from '../../../../../libs/shared/src/constants/enum';
+import {
+  ActiveStatus,
+  Gender,
+} from '../../../../../libs/shared/src/constants/enum';
+import { UserActiveData } from '../../../../../libs/shared/src/types/kafka/notification';
 
 @Injectable()
 export class ProfileService {
@@ -71,6 +75,8 @@ export class ProfileService {
       gender: profileEntity.lastName,
       birthDate: profileEntity.birthDate.toString(),
       avatarUrl: profileEntity.avatarUrl,
+      activeStatus: profileEntity.activeStatus,
+      lastActiveAt: profileEntity.lastActiveAt?.toISOString(),
     };
   }
 
@@ -89,5 +95,16 @@ export class ProfileService {
       birthDate: dateFromString(data.birthDate),
     };
     await this.profileRepository.save(profileEntity);
+  }
+
+  async updateUserAction(data: UserActiveData) {
+    const userEntity = await this.profileRepository.findOneBy({
+      id: data.userId,
+    });
+    if (userEntity) {
+      userEntity.activeStatus = data.active;
+      userEntity.lastActiveAt = new Date();
+      await this.profileRepository.save(userEntity);
+    }
   }
 }

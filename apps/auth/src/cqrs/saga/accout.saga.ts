@@ -11,7 +11,6 @@ export class AccountSaga {
 
   @Saga()
   accountCreationSaga = (events$: Observable<any>) => {
-    console.log('AccountSaga auth-server 1');
     return events$.pipe(
       ofType(CreateProfileFailedEvent),
       switchMap((event: CreateProfileFailedEvent) => {
