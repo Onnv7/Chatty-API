@@ -5,6 +5,8 @@ import {
   GetMessageResponse,
   MessageServiceController,
   MessageServiceControllerMethods,
+  ReactMessageRequest,
+  ReactMessageResponse,
   SendMessageRequest,
   SendMessageResponse,
 } from '../../../../../libs/shared/src/types/chat';
@@ -14,6 +16,12 @@ import { Observable } from 'rxjs';
 @MessageServiceControllerMethods()
 export class MessageController implements MessageServiceController {
   constructor(private readonly messageService: MessageService) {}
+  async reactMessage(
+    request: ReactMessageRequest,
+  ): Promise<ReactMessageResponse> {
+    const data = await this.messageService.reactMessage(request);
+    return { data, success: true };
+  }
 
   async getMessagePage(
     request: GetMessageRequest,

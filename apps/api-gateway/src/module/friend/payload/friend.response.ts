@@ -50,3 +50,11 @@ export class SearchFriendResponsePayload {
   @ApiProperty({ type: [FriendData] })
   friendList: FriendData[];
 }
+
+export class GetFriendProfileSummaryResponsePayload {
+  @ApiProperty()
+  fullName: string;
+
+  @ApiProperty()
+  avatarUrl: string;
+}

@@ -5,8 +5,9 @@ import { CreateConversationRequestPayload } from './payload/conversation.request
 import { lastValueFrom } from 'rxjs';
 import { AppError } from '../../../../../libs/shared/src';
 import {
+  GetConversationByFriendIdResponsePayload,
   GetConversationPageResponsePayload,
-  GetConversationRequestPayload,
+  GetConversationResponsePayload,
 } from './payload/conversation.response';
 import { dateFromString } from '../../../../../libs/shared/src/util/date.util';
 import { AuthContextService } from '../../libs/auth-context.service';
@@ -59,7 +60,7 @@ export class ConversationService {
 
   async getConversation(
     conversationId: string,
-  ): Promise<GetConversationRequestPayload> {
+  ): Promise<GetConversationResponsePayload> {
     const { success, error, data } = await lastValueFrom(
       this.conversationClient.getConversation({
         conversationId: conversationId,
@@ -69,6 +70,23 @@ export class ConversationService {
 
     return {
       memberList: data.memberList,
+    };
+  }
+
+  async getConversationByFriendId(
+    userId: number,
+    friendId: number,
+  ): Promise<GetConversationByFriendIdResponsePayload> {
+    const { success, error, data } = await lastValueFrom(
+      this.conversationClient.getConversationByFriendId({
+        userId: userId,
+        friendId: friendId,
+      }),
+    );
+    if (!success) throw new AppError(error);
+
+    return {
+      id: data.id,
     };
   }
 }

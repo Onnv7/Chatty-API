@@ -35,5 +35,6 @@ export const SwaggerConstant = {
   RECEIVER_ID_EX: '2',
   INVITATION_ACTION_EX: 'ACCEPT',
   CONTENT_EX: 'hello world!',
+  REACTION_EX: '❤️',
   SEARCH_FRIEND_EX: 'An',
 };

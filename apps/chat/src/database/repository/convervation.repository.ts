@@ -35,7 +35,7 @@ export class ConversationRepository {
     const [docs, totalDocs] = await Promise.all([
       this.conversationModel
         .find({ memberIdList: id })
-        .sort({ createdAt: 1 })
+        .sort({ updatedAt: -1 })
         .skip((page - 1) * size)
         .limit(size),
       this.conversationModel.countDocuments(),

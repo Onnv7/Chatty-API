@@ -9,6 +9,7 @@ import {
 } from './payload/friend.request';
 import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
 import {
+  GetFriendProfileSummaryResponsePayload,
   GetReceivedInvitationListResponsePayload,
   SearchFriendResponsePayload,
 } from './payload/friend.response';
@@ -81,6 +82,14 @@ export class FriendController {
       key,
       gender,
     );
+    return { data, message: ResponseMessage.GET };
+  }
+
+  @Get('/:friendId/profile')
+  async getFriendProfileSummary(
+    @Param('friendId') friendId: number,
+  ): Promise<ResponseAPI<GetFriendProfileSummaryResponsePayload>> {
+    const data = await this.friendService.getFriendProfileSummary(friendId);
     return { data, message: ResponseMessage.GET };
   }
 }

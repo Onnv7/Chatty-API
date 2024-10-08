@@ -12,6 +12,7 @@ import {
 import { ResponseAPI } from '../../common/model/response-api';
 import { lastValueFrom } from 'rxjs';
 import {
+  GetFriendProfileSummaryResponsePayload,
   GetReceivedInvitationListResponsePayload,
   SearchFriendResponsePayload,
 } from './payload/friend.response';
@@ -95,6 +96,19 @@ export class FriendService {
     return {
       totalPage: data.totalPage,
       friendList: data.friendList ? data.friendList : [],
+    };
+  }
+
+  async getFriendProfileSummary(
+    friendId: number,
+  ): Promise<GetFriendProfileSummaryResponsePayload> {
+    const { data, success, error } = await lastValueFrom(
+      this.friendServiceClient.getFriendProfile({ friendId: friendId }),
+    );
+
+    if (!success) throw new AppError(error);
+    return {
+      ...data,
     };
   }
 }

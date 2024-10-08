@@ -20,6 +20,21 @@ export interface ErrorResponse {
 export interface Empty {
 }
 
+export interface GetFriendProfileRequest {
+  friendId: number;
+}
+
+export interface GetFriendProfileData {
+  fullName: string;
+  avatarUrl: string;
+}
+
+export interface GetFriendProfileResponse {
+  data?: GetFriendProfileData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
 export interface FriendCardData {
   profileId: number;
   avatarUrl: string;
@@ -219,6 +234,8 @@ export interface FriendServiceClient {
   getPendingInvitationList(request: GetPendingInvitationListRequest): Observable<GetPendingInvitationListResponse>;
 
   searchFriend(request: SearchFriendRequest): Observable<SearchFriendResponse>;
+
+  getFriendProfile(request: GetFriendProfileRequest): Observable<GetFriendProfileResponse>;
 }
 
 export interface FriendServiceController {
@@ -240,11 +257,21 @@ export interface FriendServiceController {
   searchFriend(
     request: SearchFriendRequest,
   ): Promise<SearchFriendResponse> | Observable<SearchFriendResponse> | SearchFriendResponse;
+
+  getFriendProfile(
+    request: GetFriendProfileRequest,
+  ): Promise<GetFriendProfileResponse> | Observable<GetFriendProfileResponse> | GetFriendProfileResponse;
 }
 
 export function FriendServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["sendInvitation", "processInvitation", "getPendingInvitationList", "searchFriend"];
+    const grpcMethods: string[] = [
+      "sendInvitation",
+      "processInvitation",
+      "getPendingInvitationList",
+      "searchFriend",
+      "getFriendProfile",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("FriendService", method)(constructor.prototype[method], method, descriptor);

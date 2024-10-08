@@ -5,8 +5,9 @@ import { CreateConversationRequestPayload } from './payload/conversation.request
 import { ResponseAPI } from '../../common/model/response-api';
 import { ResponseMessage } from '../../../../../libs/shared/src';
 import {
+  GetConversationByFriendIdResponsePayload,
   GetConversationPageResponsePayload,
-  GetConversationRequestPayload,
+  GetConversationResponsePayload,
 } from './payload/conversation.response';
 import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
 
@@ -44,8 +45,20 @@ export class ConversationController {
   @Get('/:conversationId')
   async getConversation(
     @Param('conversationId') conversationId: string,
-  ): Promise<ResponseAPI<GetConversationRequestPayload>> {
+  ): Promise<ResponseAPI<GetConversationResponsePayload>> {
     const data = await this.conversationService.getConversation(conversationId);
+    return { data, message: ResponseMessage.GET };
+  }
+
+  @Get('/exist/user/:userId')
+  async getConversationByFriendId(
+    @Param('userId') userId: number,
+    @Query('friendId') friendId: number,
+  ): Promise<ResponseAPI<GetConversationByFriendIdResponsePayload>> {
+    const data = await this.conversationService.getConversationByFriendId(
+      userId,
+      friendId,
+    );
     return { data, message: ResponseMessage.GET };
   }
 }

@@ -4,6 +4,8 @@ import {
   ConversationInfoData,
   CreateConversationData,
   CreateConversationRequest,
+  GetConversationByFriendIdData,
+  GetConversationByFriendIdRequest,
   GetConversationListData,
   GetConversationListRequest,
   GetConversationRequest,
@@ -40,6 +42,7 @@ export class ConversationService {
         body.page,
         body.size,
       );
+
     const friendIdList = [];
     const conversationList = await Promise.all(
       conversationPage.conversationList.map(async (conversation) => {
@@ -49,6 +52,7 @@ export class ConversationService {
         const { success, data, error } = await lastValueFrom(
           this.profileServiceClient.getProfileById({ id: receiverId }),
         );
+
         if (!success) throw new AppError(error);
         friendIdList.push(receiverId);
         return {
@@ -112,13 +116,25 @@ export class ConversationService {
         }
         return {
           id: profileId,
-          name: data.firstName + data.lastName,
+          name: data.firstName + ' ' + data.lastName,
           avatarUrl: data.avatarUrl,
         };
       }),
     );
     return {
       memberList: memberList,
+    };
+  }
+
+  async getConversationByFriendId(
+    body: GetConversationByFriendIdRequest,
+  ): Promise<GetConversationByFriendIdData> {
+    const conversation = await this.conversationRepository.getByMemberIdList([
+      body.friendId,
+      body.userId,
+    ]);
+    return {
+      id: conversation?.id,
     };
   }
 }

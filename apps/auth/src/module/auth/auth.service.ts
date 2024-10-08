@@ -215,11 +215,6 @@ export class AuthService implements OnModuleInit, OnApplicationShutdown {
     await this.accountRepository.save(accountEntity);
   }
   async registerAccount(body: RegisterAccountRequest) {
-    console.log(
-      '🚀 ~ AuthService ~ registerAccount ~ body:',
-      body,
-      dateFromString(body.birthDate),
-    );
     const accountEntity: AccountEntity = await this.commandBus.execute(
       new CreateAccountCommand(
         body.email,

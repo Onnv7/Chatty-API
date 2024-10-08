@@ -25,3 +25,17 @@ export class SendMessageRequestPayload {
   @IsOptional()
   memberIdList: number[];
 }
+
+export class ReactMessageRequestPayload {
+  @ApiProperty({ example: SwaggerConstant.REACTION_EX })
+  @IsString()
+  reaction: string;
+
+  @ApiProperty({ example: SwaggerConstant.OBJECT_ID_EX })
+  @IsString()
+  messageId: string;
+
+  @ApiProperty({ example: SwaggerConstant.OBJECT_ID_EX })
+  @IsNumber()
+  senderId: number;
+}

@@ -21,6 +21,7 @@ import {
 import {
   JoinUserTrackingRoomData,
   SendNewMessageData,
+  SendReactionData,
 } from '../../../../../libs/shared/src/types/kafka/notification';
 import {
   HeartbeatRequest,
@@ -82,6 +83,21 @@ export class ConversationGateway
         conversationId: data.conversationId,
         content: data.content,
         createdAt: data.createdAt,
+      });
+    });
+  }
+
+  async sendNewReactionToClient(data: SendReactionData) {
+    const socketIdList = await this.conversationService.getSocketId(
+      data.receiverId,
+    );
+    socketIdList.forEach((socketId) => {
+      this.io.to(socketId).emit('receive-reaction', {
+        senderId: data.senderId,
+        conversationId: data.conversationId,
+        reactionList: data.reactionList,
+        reactedCount: data.reactedCount,
+        messageId: data.messageId,
       });
     });
   }

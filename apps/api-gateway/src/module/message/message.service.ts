@@ -9,11 +9,15 @@ import {
   MessageServiceClient,
   SendMessageResponse,
 } from '../../../../../libs/shared/src/types/chat';
-import { SendMessageRequestPayload } from './payload/message.request';
+import {
+  ReactMessageRequestPayload,
+  SendMessageRequestPayload,
+} from './payload/message.request';
 import { lastValueFrom } from 'rxjs';
 import { AppError } from '../../../../../libs/shared/src';
 import {
   GetMessagePageResponsePayload,
+  ReactMessageResponsePayload,
   SendMessageResponsePayload,
 } from './payload/message.response';
 import { AuthContextService } from '../../libs/auth-context.service';
@@ -52,7 +56,7 @@ export class MessageService {
           senderId: body.senderId,
         }),
       );
-      return;
+      return { id: conversationData.conversationId };
     }
     data = await lastValueFrom(
       this.messageServiceClient.sendMessage({
@@ -76,6 +80,21 @@ export class MessageService {
         conversationId: conversationId,
         page: page,
         size: size,
+      }),
+    );
+
+    if (!success) throw new AppError(error);
+    return data;
+  }
+
+  async reactMessage(
+    body: ReactMessageRequestPayload,
+  ): Promise<ReactMessageResponsePayload> {
+    const { success, error, data } = await lastValueFrom(
+      this.messageServiceClient.reactMessage({
+        senderId: body.senderId,
+        reaction: body.reaction,
+        messageId: body.messageId,
       }),
     );
 

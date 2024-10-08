@@ -3,6 +3,8 @@ import { FriendService } from './friend.service';
 import {
   FriendServiceController,
   FriendServiceControllerMethods,
+  GetFriendProfileRequest,
+  GetFriendProfileResponse,
   GetPendingInvitationListRequest,
   GetPendingInvitationListResponse,
   ProcessInvitationRequest,
@@ -18,6 +20,12 @@ import { Observable } from 'rxjs';
 @FriendServiceControllerMethods()
 export class FriendController implements FriendServiceController {
   constructor(private readonly friendService: FriendService) {}
+  async getFriendProfile(
+    request: GetFriendProfileRequest,
+  ): Promise<GetFriendProfileResponse> {
+    const data = await this.friendService.getFriendProfile(request);
+    return { data, success: true };
+  }
   async searchFriend(
     request: SearchFriendRequest,
   ): Promise<SearchFriendResponse> {

@@ -5,16 +5,26 @@ import {
   ConversationServiceControllerMethods,
   CreateConversationRequest,
   CreateConversationResponse,
+  GetConversationByFriendIdRequest,
+  GetConversationByFriendIdResponse,
   GetConversationListRequest,
   GetConversationListResponse,
   GetConversationRequest,
   GetConversationResponse,
 } from '../../../../../libs/shared/src/types/chat';
+import { Observable } from 'rxjs';
 
 @Controller('conversation')
 @ConversationServiceControllerMethods()
 export class ConversationController implements ConversationServiceController {
   constructor(private readonly conversationService: ConversationService) {}
+  async getConversationByFriendId(
+    request: GetConversationByFriendIdRequest,
+  ): Promise<GetConversationByFriendIdResponse> {
+    const data =
+      await this.conversationService.getConversationByFriendId(request);
+    return { data, success: true };
+  }
   async getConversation(
     request: GetConversationRequest,
   ): Promise<GetConversationResponse> {

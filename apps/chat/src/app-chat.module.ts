@@ -27,10 +27,6 @@ import {
   ProfileServiceClient,
   USER_PACKAGE_NAME,
 } from '../../../libs/shared/src/types/user';
-import {
-  MessageChain,
-  MessageChainSchema,
-} from './database/schema/message-chain.schema';
 
 const schemaList = [
   { name: Conversation.name, schema: ConversationSchema },

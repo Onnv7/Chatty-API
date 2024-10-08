@@ -14,6 +14,15 @@ export interface SendNewMessageData {
   createdAt: string;
 }
 
+export interface SendReactionData {
+  receiverId: number;
+  senderId: number;
+  conversationId: string;
+  messageId: string;
+  reactionList: string[];
+  reactedCount: number;
+}
+
 export class UserActiveData {
   userId: number;
   active: ActiveStatus;

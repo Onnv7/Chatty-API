@@ -9,6 +9,10 @@ import { ConversationRepository } from '../../database/repository/convervation.r
 import {
   GetMessageData,
   GetMessageRequest,
+  MessageChainData,
+  MessageData,
+  ReactMessageData,
+  ReactMessageRequest,
   SendMessageData,
   SendMessageRequest,
 } from '../../../../../libs/shared/src/types/chat';
@@ -16,6 +20,7 @@ import {
   AppError,
   ErrorResponseData,
   KAFKA_SEND_MESSAGE_TOPIC,
+  KAFKA_SEND_REACTION_TOPIC,
   NOTIFICATION_SERVICE_CLIENT_KAFKA,
   PROFILE_SERVICE,
 } from '../../../../../libs/shared/src';
@@ -23,7 +28,10 @@ import { Message } from '../../database/schema/message.schema';
 import { ProfileServiceClient } from '../../../../../libs/shared/src/types/user';
 import { lastValueFrom } from 'rxjs';
 import { ClientKafka } from '@nestjs/microservices';
-import { SendNewMessageData } from '../../../../../libs/shared/src/types/kafka/notification';
+import {
+  SendNewMessageData,
+  SendReactionData,
+} from '../../../../../libs/shared/src/types/kafka/notification';
 
 @Injectable()
 export class MessageService implements OnModuleInit, OnApplicationShutdown {
@@ -45,39 +53,49 @@ export class MessageService implements OnModuleInit, OnApplicationShutdown {
   }
 
   async getMessagePage(body: GetMessageRequest): Promise<GetMessageData> {
+    const messageListData: MessageChainData[] = [];
     const messagePage = await this.messageRepository.getMessagePage(
       body.conversationId,
       body.page,
       body.size,
     );
-    const messageList = await Promise.all(
-      messagePage.messageList?.map(async (message) => {
-        const { success, data, error } = await lastValueFrom(
-          this.profileServiceClient.getProfileById({
-            id: message.senderId,
-          }),
-        );
-        if (!success) {
-          throw new AppError(error);
-        }
+    const messageList = messagePage.messageList;
 
-        return {
-          messageChain: message.messageChain.map((msg) => {
-            return {
-              content: msg.content,
-              createdAt: msg.createdAt.toISOString(),
-              id: msg._id,
-            };
-          }),
-          senderId: message.senderId,
-        };
-      }),
-    );
-    return { totalPage: messagePage.totalPage, messageList: messageList };
+    if (messageList.length === 0) {
+      return { totalPage: messagePage.totalPage, messageList: [] };
+    }
+    let prevSender = -1;
+    messageList.reverse();
+    messageList.forEach((msg, index) => {
+      const uniqueReactions: string[] = Array.from(
+        new Set(msg.reaction.map((react) => react.reaction)),
+      ).slice(0, 3);
+
+      const currentSenderId = msg.senderId;
+      const element: MessageData = {
+        id: msg.id,
+        content: msg.content,
+        createdAt: msg.createdAt.toISOString(),
+        reactionList: uniqueReactions ?? [],
+        reactedCount: msg.reaction.length,
+      };
+      if (currentSenderId === prevSender) {
+        const lastChain: MessageChainData =
+          messageListData[messageListData.length - 1];
+        lastChain.messageChain.push(element);
+      } else {
+        prevSender = msg.senderId;
+        messageListData.push({
+          senderId: msg.senderId,
+          messageChain: [element],
+        });
+      }
+    });
+
+    return { totalPage: messagePage.totalPage, messageList: messageListData };
   }
 
   async sendMessage(body: SendMessageRequest): Promise<SendMessageData> {
-    let messageId;
     const conversation = await this.conversationRepository.getById(
       body.conversationId,
     );
@@ -88,24 +106,13 @@ export class MessageService implements OnModuleInit, OnApplicationShutdown {
     ) {
       throw new AppError(ErrorResponseData.CONVERSATION_NOT_FOUND);
     }
+    const newMessage: Message = {
+      senderId: body.senderId,
+      content: body.content,
+      conversationId: body.conversationId,
+    };
+    const msgData = await this.messageRepository.create(newMessage);
 
-    if (conversation.senderId && conversation.senderId === body.senderId) {
-      const lastMessage = await this.messageRepository.getLastMessage(
-        body.conversationId,
-      );
-
-      lastMessage.messageChain.push({ content: body.content });
-      messageId = lastMessage.messageChain.reverse()[0]._id;
-      await lastMessage.save();
-    } else {
-      const newMessage: Message = {
-        messageChain: [{ content: body.content }],
-        senderId: body.senderId,
-        conversationId: body.conversationId,
-      };
-      const newMsg = await this.messageRepository.create(newMessage);
-      messageId = newMsg.messageChain[0]._id;
-    }
     const receiverId = conversation.memberIdList.find(
       (memberId) => memberId !== body.senderId,
     );
@@ -122,12 +129,56 @@ export class MessageService implements OnModuleInit, OnApplicationShutdown {
       data,
     );
     conversation.lastMessage = body.content;
-
     conversation.senderId = body.senderId;
     await conversation.save();
+
     conversation.lastMessage;
     return {
-      id: messageId,
+      id: msgData.id,
+    };
+  }
+  async reactMessage(body: ReactMessageRequest): Promise<ReactMessageData> {
+    const message = await this.messageRepository.getMessage(body.messageId);
+    if (message) {
+      const reacted = message.reaction.find(
+        (react) =>
+          react.actorId === body.senderId && react.reaction === body.reaction,
+      );
+      message.reaction = message.reaction.filter(
+        (react) => react.actorId !== body.senderId,
+      );
+      if (!reacted)
+        message.reaction.push({
+          reaction: body.reaction,
+          actorId: body.senderId,
+        });
+    }
+
+    message.save();
+    const conversation = await this.conversationRepository.getById(
+      message.conversationId,
+    );
+    const receiverId = conversation.memberIdList.find(
+      (memberId) => memberId !== body.senderId,
+    );
+    const uniqueReactions: string[] = Array.from(
+      new Set(message.reaction.map((react) => react.reaction)),
+    ).slice(0, 3);
+
+    this.notificationClient.emit<any, SendReactionData>(
+      KAFKA_SEND_REACTION_TOPIC,
+      {
+        senderId: body.senderId,
+        receiverId: receiverId,
+        reactionList: uniqueReactions,
+        reactedCount: message.reaction.length,
+        messageId: body.messageId,
+        conversationId: message.conversationId,
+      },
+    );
+    return {
+      reactionList: uniqueReactions,
+      reactedCount: message.reaction.length,
     };
   }
 }

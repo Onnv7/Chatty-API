@@ -37,4 +37,10 @@ export class MessageRepository {
       .exec();
     return lastMessage[0];
   }
+
+  async getMessage(messageId: string) {
+    const lastMessage = await this.messageModel.findById(messageId);
+
+    return lastMessage;
+  }
 }

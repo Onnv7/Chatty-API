@@ -4,7 +4,7 @@ import mongoose from 'mongoose';
 @Schema({ _id: true })
 export class MessageAction {
   @Prop({ required: true })
-  action: string;
+  reaction: string;
 
   @Prop({})
   actorId?: number;

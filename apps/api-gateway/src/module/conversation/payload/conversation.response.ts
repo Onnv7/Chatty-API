@@ -48,7 +48,12 @@ export class ConversationMemberData {
   avatarUrl: string;
 }
 
-export class GetConversationRequestPayload {
+export class GetConversationResponsePayload {
   @ApiProperty()
   memberList: ConversationMemberData[];
+}
+
+export class GetConversationByFriendIdResponsePayload {
+  @ApiProperty()
+  id: string;
 }

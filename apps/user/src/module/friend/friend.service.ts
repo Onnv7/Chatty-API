@@ -2,6 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { FriendRepository } from '../../database/repository/friend.repository';
 import {
   FriendCardData,
+  GetFriendProfileData,
+  GetFriendProfileRequest,
   GetPendingInvitationListData,
   GetPendingInvitationListRequest,
   GetPendingInvitationListResponse,
@@ -161,6 +163,20 @@ export class FriendService {
     return {
       totalPage: page.meta.totalPages,
       friendList: friendList,
+    };
+  }
+  async getFriendProfile(
+    body: GetFriendProfileRequest,
+  ): Promise<GetFriendProfileData> {
+    const profileEntity = await this.profileRepository.findOneBy({
+      id: body.friendId,
+    });
+    if (!profileEntity) {
+      throw new AppError(ErrorResponseData.USER_NOT_FOUND);
+    }
+    return {
+      fullName: profileEntity.firstName + ' ' + profileEntity.lastName,
+      avatarUrl: profileEntity.avatarUrl,
     };
   }
 }

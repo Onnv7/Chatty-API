@@ -9,12 +9,16 @@ import {
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { SendMessageRequestPayload } from './payload/message.request';
+import {
+  ReactMessageRequestPayload,
+  SendMessageRequestPayload,
+} from './payload/message.request';
 import { ResponseAPI } from '../../common/model/response-api';
 import { ResponseMessage } from '../../../../../libs/shared/src';
 import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
 import {
   GetMessagePageResponsePayload,
+  ReactMessageResponsePayload,
   SendMessageResponsePayload,
 } from './payload/message.response';
 import { JwtGuard } from '../../common/guard/jwt.guard';
@@ -50,5 +54,13 @@ export class MessageController {
       size,
     );
     return { data, message: ResponseMessage.GET };
+  }
+
+  @Post('/react')
+  async reactMessage(
+    @Body() body: ReactMessageRequestPayload,
+  ): Promise<ResponseAPI<ReactMessageResponsePayload>> {
+    const data = await this.messageService.reactMessage(body);
+    return { data, message: ResponseMessage.UPDATE };
   }
 }

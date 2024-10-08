@@ -24,6 +24,20 @@ service FriendService {
   rpc ProcessInvitation(ProcessInvitationRequest) returns (ProcessInvitationResponse) {}
   rpc GetPendingInvitationList(GetPendingInvitationListRequest) returns (GetPendingInvitationListResponse) {}
   rpc SearchFriend(SearchFriendRequest) returns (SearchFriendResponse) {}
+  rpc GetFriendProfile(GetFriendProfileRequest) returns (GetFriendProfileResponse) {}
+}
+
+message GetFriendProfileRequest {
+  int32 friendId = 1;
+}
+message GetFriendProfileData {
+  string fullName = 1;
+  string avatarUrl = 2;
+}
+message GetFriendProfileResponse {
+  optional GetFriendProfileData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
 }
 
 message FriendCardData {

@@ -10,6 +10,12 @@ export class MessageData {
 
   @ApiProperty()
   id: string;
+
+  @ApiProperty()
+  reactionList: string[];
+
+  @ApiProperty()
+  reactedCount: number;
 }
 
 export class MessageChainData {
@@ -30,4 +36,12 @@ export class GetMessagePageResponsePayload {
 export class SendMessageResponsePayload {
   @ApiProperty()
   id: string;
+}
+
+export class ReactMessageResponsePayload {
+  @ApiProperty({ isArray: true, type: String })
+  reactionList: string[];
+
+  @ApiProperty()
+  reactedCount: number;
 }

@@ -20,10 +20,47 @@ export interface ErrorResponse {
 export interface Empty {
 }
 
+export interface GetConversationByFriendIdRequest {
+  userId: number;
+  friendId: number;
+}
+
+export interface GetConversationByFriendIdData {
+  id: string;
+}
+
+export interface GetConversationByFriendIdResponse {
+  data?: GetConversationByFriendIdData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface ReactMessageData {
+  reactionList: string[];
+  reactedCount: number;
+}
+
+export interface ReactMessageResponse {
+  data?: ReactMessageData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
+export interface ReactMessageRequest {
+  senderId: number;
+  reaction: string;
+  messageId: string;
+}
+
+export interface ReactionData {
+}
+
 export interface MessageData {
   content: string;
   createdAt: string;
   id: string;
+  reactionList: string[];
+  reactedCount: number;
 }
 
 export interface MessageChainData {
@@ -133,6 +170,8 @@ export const CHAT_PACKAGE_NAME = "chat";
 export interface MessageServiceClient {
   sendMessage(request: SendMessageRequest): Observable<SendMessageResponse>;
 
+  reactMessage(request: ReactMessageRequest): Observable<ReactMessageResponse>;
+
   getMessagePage(request: GetMessageRequest): Observable<GetMessageResponse>;
 }
 
@@ -141,6 +180,10 @@ export interface MessageServiceController {
     request: SendMessageRequest,
   ): Promise<SendMessageResponse> | Observable<SendMessageResponse> | SendMessageResponse;
 
+  reactMessage(
+    request: ReactMessageRequest,
+  ): Promise<ReactMessageResponse> | Observable<ReactMessageResponse> | ReactMessageResponse;
+
   getMessagePage(
     request: GetMessageRequest,
   ): Promise<GetMessageResponse> | Observable<GetMessageResponse> | GetMessageResponse;
@@ -148,7 +191,7 @@ export interface MessageServiceController {
 
 export function MessageServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["sendMessage", "getMessagePage"];
+    const grpcMethods: string[] = ["sendMessage", "reactMessage", "getMessagePage"];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("MessageService", method)(constructor.prototype[method], method, descriptor);
@@ -169,6 +212,8 @@ export interface ConversationServiceClient {
   getConversationPage(request: GetConversationListRequest): Observable<GetConversationListResponse>;
 
   getConversation(request: GetConversationRequest): Observable<GetConversationResponse>;
+
+  getConversationByFriendId(request: GetConversationByFriendIdRequest): Observable<GetConversationByFriendIdResponse>;
 }
 
 export interface ConversationServiceController {
@@ -183,11 +228,23 @@ export interface ConversationServiceController {
   getConversation(
     request: GetConversationRequest,
   ): Promise<GetConversationResponse> | Observable<GetConversationResponse> | GetConversationResponse;
+
+  getConversationByFriendId(
+    request: GetConversationByFriendIdRequest,
+  ):
+    | Promise<GetConversationByFriendIdResponse>
+    | Observable<GetConversationByFriendIdResponse>
+    | GetConversationByFriendIdResponse;
 }
 
 export function ConversationServiceControllerMethods() {
   return function (constructor: Function) {
-    const grpcMethods: string[] = ["createConversation", "getConversationPage", "getConversation"];
+    const grpcMethods: string[] = [
+      "createConversation",
+      "getConversationPage",
+      "getConversation",
+      "getConversationByFriendId",
+    ];
     for (const method of grpcMethods) {
       const descriptor: any = Reflect.getOwnPropertyDescriptor(constructor.prototype, method);
       GrpcMethod("ConversationService", method)(constructor.prototype[method], method, descriptor);

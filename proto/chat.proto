@@ -12,13 +12,57 @@ message Empty {}
 
 service MessageService {
     rpc SendMessage (SendMessageRequest) returns (SendMessageResponse) {}
+    rpc ReactMessage (ReactMessageRequest) returns (ReactMessageResponse) {}
     rpc GetMessagePage (GetMessageRequest) returns (GetMessageResponse) {}
 }
+service ConversationService {
+    rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
+    rpc GetConversationPage (GetConversationListRequest) returns (GetConversationListResponse) {}
+    rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {}
+    rpc GetConversationByFriendId (GetConversationByFriendIdRequest) returns (GetConversationByFriendIdResponse) {}
+}
 
+message GetConversationByFriendIdRequest {
+    int32 userId = 1;
+    int32 friendId = 2;
+}
+
+message GetConversationByFriendIdData {
+    string id = 1;
+}
+
+message GetConversationByFriendIdResponse {
+    optional GetConversationByFriendIdData data = 1; 
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}
+
+message ReactMessageData {
+    repeated string reactionList = 1;
+    int32 reactedCount = 2;
+}
+
+message ReactMessageResponse {
+    optional ReactMessageData data = 1;
+    optional ErrorResponse error = 2; 
+    bool success = 3; 
+}
+
+message ReactMessageRequest {
+    int32 senderId = 1;
+    string reaction = 2;
+    string messageId = 3;
+}
+
+message ReactionData {
+
+}
 message MessageData {
     string content = 1;
     string createdAt = 2;
     string id = 3;
+    repeated string reactionList = 4;
+    int32 reactedCount = 5;
 }
 
 message MessageChainData {
@@ -58,13 +102,6 @@ message SendMessageResponse {
     optional SendMessageData data = 1;
     optional ErrorResponse error = 2; 
     bool success = 3; 
-}
-
-
-service ConversationService {
-    rpc CreateConversation (CreateConversationRequest) returns (CreateConversationResponse) {}
-    rpc GetConversationPage (GetConversationListRequest) returns (GetConversationListResponse) {}
-    rpc GetConversation (GetConversationRequest) returns (GetConversationResponse) {}
 }
 
 message ConversationMemberData {
