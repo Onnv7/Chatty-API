@@ -1,13 +1,11 @@
 import { Controller } from '@nestjs/common';
 import { Transport, Payload, EventPattern } from '@nestjs/microservices';
 import {
-  KAFKA_ADD_USER_TRACKING_ROOM_TOPIC,
   KAFKA_SEND_MESSAGE_TOPIC,
   KAFKA_SEND_REACTION_TOPIC,
 } from '../../../../../libs/shared/src';
 import { ConversationService } from './conversation.service';
 import {
-  JoinUserTrackingRoomData,
   SendNewMessageData,
   SendReactionData,
 } from '../../../../../libs/shared/src/types/kafka/notification';

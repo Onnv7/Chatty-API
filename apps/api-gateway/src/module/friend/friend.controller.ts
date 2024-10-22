@@ -10,6 +10,7 @@ import {
 import { ApiQueryURL } from '../../common/decorator/query-swagger.decorator';
 import {
   GetFriendProfileSummaryResponsePayload,
+  GetPeerIdListResponsePayload,
   GetReceivedInvitationListResponsePayload,
   SearchFriendResponsePayload,
 } from './payload/friend.response';
@@ -90,6 +91,14 @@ export class FriendController {
     @Param('friendId') friendId: number,
   ): Promise<ResponseAPI<GetFriendProfileSummaryResponsePayload>> {
     const data = await this.friendService.getFriendProfileSummary(friendId);
+    return { data, message: ResponseMessage.GET };
+  }
+
+  @Get('/:friendId/peerIdList')
+  async getPeerIdList(
+    @Param('friendId') friendId: number,
+  ): Promise<ResponseAPI<GetPeerIdListResponsePayload>> {
+    const data = await this.friendService.getPeerIdList(friendId);
     return { data, message: ResponseMessage.GET };
   }
 }

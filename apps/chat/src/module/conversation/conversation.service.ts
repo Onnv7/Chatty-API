@@ -14,14 +14,12 @@ import { Conversation } from '../../database/schema/conversation.schema';
 import {
   AppError,
   ErrorResponseData,
-  KAFKA_ADD_USER_TRACKING_ROOM_TOPIC,
   NOTIFICATION_SERVICE_CLIENT_KAFKA,
   PROFILE_SERVICE,
 } from '../../../../../libs/shared/src';
 import { ProfileServiceClient } from '../../../../../libs/shared/src/types/user';
 import { lastValueFrom } from 'rxjs';
 import { ClientKafka } from '@nestjs/microservices';
-import { JoinUserTrackingRoomData } from '../../../../../libs/shared/src/types/kafka/notification';
 
 @Injectable()
 export class ConversationService {
@@ -98,6 +96,7 @@ export class ConversationService {
   async getConversation(
     body: GetConversationRequest,
   ): Promise<ConversationInfoData> {
+    console.log('🚀 ~ ConversationService ~ body:', body);
     const conversation = await this.conversationRepository.getById(
       body.conversationId,
     );

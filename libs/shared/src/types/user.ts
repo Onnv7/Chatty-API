@@ -20,6 +20,20 @@ export interface ErrorResponse {
 export interface Empty {
 }
 
+export interface GetPeerIdListByUserRequest {
+  userId: number;
+}
+
+export interface GetPeerIdListByUserData {
+  peerIdList: string[];
+}
+
+export interface GetPeerIdListByUserResponse {
+  data?: GetPeerIdListByUserData | undefined;
+  error?: ErrorResponse | undefined;
+  success: boolean;
+}
+
 export interface GetFriendProfileRequest {
   friendId: number;
 }
@@ -227,6 +241,8 @@ export function ProfileServiceControllerMethods() {
 export const PROFILE_SERVICE_NAME = "ProfileService";
 
 export interface FriendServiceClient {
+  getPeerIdListByUser(request: GetPeerIdListByUserRequest): Observable<GetPeerIdListByUserResponse>;
+
   sendInvitation(request: SendInvitationRequest): Observable<SendInvitationResponse>;
 
   processInvitation(request: ProcessInvitationRequest): Observable<ProcessInvitationResponse>;
@@ -239,6 +255,10 @@ export interface FriendServiceClient {
 }
 
 export interface FriendServiceController {
+  getPeerIdListByUser(
+    request: GetPeerIdListByUserRequest,
+  ): Promise<GetPeerIdListByUserResponse> | Observable<GetPeerIdListByUserResponse> | GetPeerIdListByUserResponse;
+
   sendInvitation(
     request: SendInvitationRequest,
   ): Promise<SendInvitationResponse> | Observable<SendInvitationResponse> | SendInvitationResponse;
@@ -266,6 +286,7 @@ export interface FriendServiceController {
 export function FriendServiceControllerMethods() {
   return function (constructor: Function) {
     const grpcMethods: string[] = [
+      "getPeerIdListByUser",
       "sendInvitation",
       "processInvitation",
       "getPendingInvitationList",

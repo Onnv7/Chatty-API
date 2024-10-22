@@ -58,3 +58,8 @@ export class GetFriendProfileSummaryResponsePayload {
   @ApiProperty()
   avatarUrl: string;
 }
+
+export class GetPeerIdListResponsePayload {
+  @ApiProperty()
+  peerIdList: string[];
+}

@@ -5,6 +5,8 @@ import {
   FriendServiceControllerMethods,
   GetFriendProfileRequest,
   GetFriendProfileResponse,
+  GetPeerIdListByUserRequest,
+  GetPeerIdListByUserResponse,
   GetPendingInvitationListRequest,
   GetPendingInvitationListResponse,
   ProcessInvitationRequest,
@@ -20,6 +22,13 @@ import { Observable } from 'rxjs';
 @FriendServiceControllerMethods()
 export class FriendController implements FriendServiceController {
   constructor(private readonly friendService: FriendService) {}
+
+  async getPeerIdListByUser(
+    request: GetPeerIdListByUserRequest,
+  ): Promise<GetPeerIdListByUserResponse> {
+    const data = await this.friendService.getPeerIdListByUser(request);
+    return { data, success: true };
+  }
   async getFriendProfile(
     request: GetFriendProfileRequest,
   ): Promise<GetFriendProfileResponse> {

@@ -19,13 +19,15 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import {
-  JoinUserTrackingRoomData,
   SendNewMessageData,
   SendReactionData,
 } from '../../../../../libs/shared/src/types/kafka/notification';
 import {
   HeartbeatRequest,
+  InitPhoneCallRequest,
+  JoinUserTrackingRoomRequest,
   RegisterSocketClientRequest,
+  ShareCalleePeerIdRequest,
 } from './payload/conversation.request';
 
 import { instrument } from '@socket.io/admin-ui';
@@ -74,7 +76,7 @@ export class ConversationGateway
   io: Namespace;
 
   async sendNewMessageToClient(data: SendNewMessageData) {
-    const socketIdList = await this.conversationService.getSocketId(
+    const { socketIdList } = await this.conversationService.getRealtimeIdList(
       data.receiverId,
     );
     socketIdList.forEach((socketId) => {
@@ -88,7 +90,7 @@ export class ConversationGateway
   }
 
   async sendNewReactionToClient(data: SendReactionData) {
-    const socketIdList = await this.conversationService.getSocketId(
+    const { socketIdList } = await this.conversationService.getRealtimeIdList(
       data.receiverId,
     );
     socketIdList.forEach((socketId) => {
@@ -108,7 +110,7 @@ export class ConversationGateway
     @MessageBody() body: RegisterSocketClientRequest,
     @ConnectedSocket() client: Socket,
   ) {
-    await this.conversationService.registerClientOnline(body.userId, client.id);
+    await this.conversationService.registerClientOnline(body, client.id);
     this.io.in(`user-tracking:${body.userId}`).emit('active-status-friend', {
       senderId: body.userId,
       activeStatus: ActiveStatus.ONLINE,
@@ -123,9 +125,10 @@ export class ConversationGateway
   ) {
     await this.conversationService.handleHeartbeat(body.userId, client.id);
   }
+
   @SubscribeMessage('join-room-friend-tracking')
   async addUserTrackingRoom(
-    @MessageBody() data: JoinUserTrackingRoomData,
+    @MessageBody() data: JoinUserTrackingRoomRequest,
     @ConnectedSocket() client: Socket,
   ) {
     if (client) {
@@ -134,5 +137,45 @@ export class ConversationGateway
         client.join(`user-tracking:${friendId}`);
       }
     }
+  }
+
+  @SubscribeMessage('init-phone-call')
+  async initPhoneCall(
+    @MessageBody() data: InitPhoneCallRequest,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const conversationInfo = await this.conversationService.getConversation(
+      data.conversationId,
+    );
+    const callerId = data.caller.id;
+
+    conversationInfo.memberList.forEach(async (member) => {
+      if (member.id !== callerId) {
+        const { socketIdList } =
+          await this.conversationService.getRealtimeIdList(member.id);
+        console.log('🚀 ~ initPhoneCall ~ socketIdList:', data, socketIdList);
+        socketIdList.forEach((socketId) => {
+          this.io.to(socketId).emit('receive-phone-call', {
+            conversation: {
+              id: data.conversationId,
+              imageUrl: data.caller.avatarUrl,
+              name: data.caller.fullName,
+              socketId: client.id,
+              peerId: data.caller.peerId,
+            },
+          });
+        });
+      }
+    });
+  }
+  @SubscribeMessage('callee-share-peer-id')
+  async shareCalleePeerId(
+    @MessageBody() data: ShareCalleePeerIdRequest,
+    @ConnectedSocket() client: Socket,
+  ) {
+    console.log('share', data);
+    this.io
+      .to(data.callerSocketId)
+      .emit('receive-callee-peer-id', data.calleePeerId);
   }
 }

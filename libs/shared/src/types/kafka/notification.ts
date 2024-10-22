@@ -27,7 +27,3 @@ export class UserActiveData {
   userId: number;
   active: ActiveStatus;
 }
-
-export interface JoinUserTrackingRoomData {
-  friendIdList: number[];
-}

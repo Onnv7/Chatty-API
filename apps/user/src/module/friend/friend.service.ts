@@ -4,6 +4,9 @@ import {
   FriendCardData,
   GetFriendProfileData,
   GetFriendProfileRequest,
+  GetPeerIdListByUserData,
+  GetPeerIdListByUserRequest,
+  GetPeerIdListByUserResponse,
   GetPendingInvitationListData,
   GetPendingInvitationListRequest,
   GetPendingInvitationListResponse,
@@ -26,12 +29,15 @@ import { FriendEntity } from '../../database/entity/friend.entity';
 import { FindManyOptions, Like } from 'typeorm';
 import { paginate } from 'nestjs-typeorm-paginate';
 import { ProfileEntity } from '../../database/entity/profile.entity';
+import { InjectRedis } from '@nestjs-modules/ioredis';
+import Redis from 'ioredis';
 
 @Injectable()
 export class FriendService {
   constructor(
     private readonly friendRepository: FriendRepository,
     private readonly profileRepository: ProfileRepository,
+    @InjectRedis() private readonly redis: Redis,
   ) {}
 
   async sendFriendInvitation(body: SendInvitationRequest): Promise<void> {
@@ -178,5 +184,32 @@ export class FriendService {
       fullName: profileEntity.firstName + ' ' + profileEntity.lastName,
       avatarUrl: profileEntity.avatarUrl,
     };
+  }
+
+  async getPeerIdListByUser(
+    body: GetPeerIdListByUserRequest,
+  ): Promise<GetPeerIdListByUserData> {
+    const { peerIdList } = await this.getRealtimeIdList(body.userId);
+    return { peerIdList: peerIdList };
+  }
+
+  async getRealtimeIdList(userId: number) {
+    const result = await this.redis.scan('0', 'MATCH', `${userId}:*`);
+    const keys = result[1];
+
+    const socketIdList = [];
+    const peerIdList = [];
+    if (keys.length > 0) {
+      for (const key of keys) {
+        const parts = key.split(':');
+        const socketId = parts.length > 1 ? parts[1] : null;
+        const peerId = await this.redis.get(key);
+        if (socketId) {
+          socketIdList.push(socketId);
+          peerIdList.push(peerId);
+        }
+      }
+    }
+    return { socketIdList: socketIdList, peerIdList: peerIdList };
   }
 }

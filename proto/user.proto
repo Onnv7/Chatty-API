@@ -20,6 +20,7 @@ service ProfileService {
 }
 
 service FriendService {
+  rpc GetPeerIdListByUser(GetPeerIdListByUserRequest) returns (GetPeerIdListByUserResponse) {}
   rpc SendInvitation(SendInvitationRequest) returns (SendInvitationResponse) {}
   rpc ProcessInvitation(ProcessInvitationRequest) returns (ProcessInvitationResponse) {}
   rpc GetPendingInvitationList(GetPendingInvitationListRequest) returns (GetPendingInvitationListResponse) {}
@@ -27,6 +28,19 @@ service FriendService {
   rpc GetFriendProfile(GetFriendProfileRequest) returns (GetFriendProfileResponse) {}
 }
 
+message GetPeerIdListByUserRequest {
+  int32 userId = 1;
+}
+
+message GetPeerIdListByUserData {
+  repeated string peerIdList = 1;
+}
+
+message GetPeerIdListByUserResponse {
+  optional GetPeerIdListByUserData data = 1;
+  optional ErrorResponse error = 2; 
+  bool success = 3; 
+}
 message GetFriendProfileRequest {
   int32 friendId = 1;
 }

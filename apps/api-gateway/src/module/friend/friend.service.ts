@@ -13,6 +13,7 @@ import { ResponseAPI } from '../../common/model/response-api';
 import { lastValueFrom } from 'rxjs';
 import {
   GetFriendProfileSummaryResponsePayload,
+  GetPeerIdListResponsePayload,
   GetReceivedInvitationListResponsePayload,
   SearchFriendResponsePayload,
 } from './payload/friend.response';
@@ -109,6 +110,17 @@ export class FriendService {
     if (!success) throw new AppError(error);
     return {
       ...data,
+    };
+  }
+
+  async getPeerIdList(friendId: number): Promise<GetPeerIdListResponsePayload> {
+    const { data, success, error } = await lastValueFrom(
+      this.friendServiceClient.getPeerIdListByUser({ userId: friendId }),
+    );
+
+    if (!success) throw new AppError(error);
+    return {
+      peerIdList: data.peerIdList,
     };
   }
 }

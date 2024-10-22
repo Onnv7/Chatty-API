@@ -7,11 +7,16 @@ import { ConversationGateway } from './conversation.gateway';
 import { InjectRedis } from '@nestjs-modules/ioredis';
 import Redis from 'ioredis';
 import {
+  AppError,
+  CONVERSATION_SERVICE,
   KAFKA_USER_ACTION_TOPIC,
   USER_SERVICE_CLIENT_KAFKA,
 } from '../../../../../libs/shared/src';
 import { ClientKafka } from '@nestjs/microservices';
 import { ActiveStatus } from '../../../../../libs/shared/src/constants/enum';
+import { RegisterSocketClientRequest } from './payload/conversation.request';
+import { ConversationServiceClient } from '../../../../../libs/shared/src/types/chat';
+import { lastValueFrom } from 'rxjs';
 
 @Injectable()
 export class ConversationService {
@@ -20,6 +25,8 @@ export class ConversationService {
     private readonly userClient: ClientKafka,
     @Inject(forwardRef(() => ConversationGateway))
     private readonly conversationGateway: ConversationGateway,
+    @Inject(CONVERSATION_SERVICE)
+    private readonly conversationClient: ConversationServiceClient,
     @InjectRedis() private readonly redis: Redis,
   ) {}
 
@@ -27,10 +34,18 @@ export class ConversationService {
     this.conversationGateway.sendNewMessageToClient(data);
   }
 
-  async registerClientOnline(userId: number, socketId: string) {
-    this.redis.set(`${userId.toString()}:${socketId}`, '', 'EX', 60);
+  async registerClientOnline(
+    body: RegisterSocketClientRequest,
+    socketId: string,
+  ) {
+    this.redis.set(
+      `${body.userId.toString()}:${socketId}`,
+      body.peerId,
+      'EX',
+      60,
+    );
     this.userClient.emit<any, UserActiveData>(KAFKA_USER_ACTION_TOPIC, {
-      userId: Number(userId),
+      userId: Number(body.userId),
       active: ActiveStatus.ONLINE,
     });
   }
@@ -70,19 +85,33 @@ export class ConversationService {
     return userId;
   }
 
-  async getSocketId(userId: number) {
+  async getRealtimeIdList(userId: number) {
     const result = await this.redis.scan('0', 'MATCH', `${userId}:*`);
     const keys = result[1];
+
     const socketIdList = [];
+    const peerIdList = [];
     if (keys.length > 0) {
       for (const key of keys) {
         const parts = key.split(':');
         const socketId = parts.length > 1 ? parts[1] : null;
+        const peerId = await this.redis.get(key);
         if (socketId) {
           socketIdList.push(socketId);
+          peerIdList.push(peerId);
         }
       }
     }
-    return socketIdList;
+    return { socketIdList: socketIdList, peerIdList: peerIdList };
+  }
+
+  async getConversation(conversationId: string) {
+    const { success, error, data } = await lastValueFrom(
+      this.conversationClient.getConversation({
+        conversationId: conversationId,
+      }),
+    );
+    if (!success) throw new AppError(error);
+    return data;
   }
 }
